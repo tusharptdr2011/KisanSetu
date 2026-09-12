@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Kisan Setu - Staff Dashboard</title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+
+        body {
+            background: #f4f8f3;
+            color: #173b27;
+        }
+
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            background: #176b3a;
+            color: white;
+
+            padding: 16px 5%;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+
+        .home-btn {
+            background: white;
+            color: #176b3a;
+
+            border: none;
+
+            padding: 9px 16px;
+
+            border-radius: 8px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        /* =========================
+           CONTAINER
+        ========================= */
+
+        .container {
+            width: 94%;
+            max-width: 1250px;
+
+            margin: 30px auto;
+        }
+
+
+        .heading {
+            margin-bottom: 25px;
+        }
+
+
+        .heading h1 {
+            font-size: 30px;
+        }
+
+
+        .heading p {
+            color: #667;
+            margin-top: 6px;
+        }
+
+
+        /* =========================
+           TOOLBAR
+        ========================= */
+
+        .toolbar {
+            background: white;
+
+            padding: 18px;
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 4px 15px rgba(0,0,0,0.06);
+
+            margin-bottom: 20px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            flex-wrap: wrap;
+        }
+
+
+        select,
+        input {
+            padding: 11px;
+
+            border: 1px solid #ccd6cf;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+        }
+
+
+        .button {
+            padding: 11px 16px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #176b3a;
+
+            color: white;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        .button:hover {
+            background: #12552f;
+        }
+
+
+        /* =========================
+           KPI
+        ========================= */
+
+        .kpis {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .kpi {
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 4px 15px rgba(0,0,0,0.06);
+        }
+
+
+        .kpi-title {
+            color: #666;
+        }
+
+
+        .kpi-value {
+            display: block;
+
+            margin-top: 8px;
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+            color: #176b3a;
+        }
+
+
+        /* =========================
+           CARD
+        ========================= */
+
+        .card {
+            background: white;
+
+            padding: 22px;
+
+            border-radius: 16px;
+
+            box-shadow:
+                0 4px 15px rgba(0,0,0,0.06);
+
+            margin-bottom: 20px;
+        }
+
+
+        .card h2 {
+            color: #176b3a;
+
+            margin-bottom: 18px;
+        }
+
+
+        /* =========================
+           TABLE
+        ========================= */
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 750px;
+        }
+
+
+        th,
+        td {
+            padding: 12px;
+
+            text-align: left;
+
+            border-bottom:
+                1px solid #eeeeee;
+        }
+
+
+        th {
+            background: #eef8f0;
+        }
+
+
+        .select-btn {
+            background: #176b3a;
+
+            color: white;
+
+            border: none;
+
+            border-radius: 7px;
+
+            padding: 8px 12px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           FORMS
+        ========================= */
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(5, 1fr);
+
+            gap: 10px;
+        }
+
+
+        .form-grid input,
+        .form-grid select {
+            width: 100%;
+        }
+
+
+        .form-button {
+            margin-top: 14px;
+
+            padding: 12px 18px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #176b3a;
+
+            color: white;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        .form-button:hover {
+            background: #12552f;
+        }
+
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        .message {
+            display: none;
+
+            margin-top: 14px;
+
+            padding: 12px;
+
+            border-radius: 8px;
+        }
+
+
+        .success {
+            background: #e5f6e9;
+
+            color: #176b3a;
+        }
+
+
+        .error {
+            background: #ffe7e7;
+
+            color: #b42318;
+        }
+
+
+        .empty {
+            text-align: center;
+
+            padding: 30px;
+
+            color: #666;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media(max-width: 850px) {
+
+            .kpis {
+                grid-template-columns:
+                    1fr 1fr;
+            }
+
+
+            .form-grid {
+                grid-template-columns:
+                    1fr 1fr;
+            }
+
+        }
+
+
+        @media(max-width: 550px) {
+
+            .kpis {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .form-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .heading h1 {
+                font-size: 25px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     NAVBAR
+========================= -->
+
+<div class="navbar">
+
+    <div class="logo">
+        🌾 Kisan Setu
+    </div>
+
+
+    <button
+        class="home-btn"
+        onclick="location.href='index.html'"
+    >
+
+        Home
+
+    </button>
+
+</div>
+
+
+
+<div class="container">
+
+
+    <!-- =========================
+         HEADING
+    ========================= -->
+
+    <div class="heading">
+
+        <h1>
+            Procurement Centre Dashboard
+        </h1>
+
+        <p>
+            Manage farmer queue, procurement and payments.
+        </p>
+
+    </div>
+
+
+
+    <!-- =========================
+         CENTRE SELECTOR
+    ========================= -->
+
+    <div class="toolbar">
+
+        <label>
+            <b>Centre:</b>
+        </label>
+
+
+        <select id="centre">
+
+            <option value="1">
+                Indore Mandi
+            </option>
+
+            <option value="2">
+                Dewas Procurement Centre
+            </option>
+
+            <option value="3">
+                Ujjain Mandi
+            </option>
+
+        </select>
+
+
+        <button
+            class="button"
+            onclick="loadQueue()"
+        >
+
+            🔄 Refresh Queue
+
+        </button>
+
+    </div>
+
+
+
+    <!-- =========================
+         KPI CARDS
+    ========================= -->
+
+    <div class="kpis">
+
+
+        <div class="kpi">
+
+            <span class="kpi-title">
+                Waiting Farmers
+            </span>
+
+            <span
+                class="kpi-value"
+                id="waitingCount"
+            >
+                0
+            </span>
+
+        </div>
+
+
+        <div class="kpi">
+
+            <span class="kpi-title">
+                Next Token
+            </span>
+
+            <span
+                class="kpi-value"
+                id="nextToken"
+            >
+                --
+            </span>
+
+        </div>
+
+
+        <div class="kpi">
+
+            <span class="kpi-title">
+                Centre Status
+            </span>
+
+            <span
+                class="kpi-value"
+                id="centreStatus"
+            >
+                Active
+            </span>
+
+        </div>
+
+
+        <div class="kpi">
+
+            <span class="kpi-title">
+                System
+            </span>
+
+            <span
+                class="kpi-value"
+            >
+                Online
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================
+         LIVE QUEUE
+    ========================= -->
+
+    <div class="card">
+
+        <h2>
+            👥 Live Farmer Queue
+        </h2>
+
+
+        <div
+            class="table-container"
+            id="queueTable"
+        >
+
+            Loading queue...
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================
+         PROCUREMENT
+    ========================= -->
+
+    <div class="card">
+
+        <h2>
+            📦 Complete Procurement
+        </h2>
+
+
+        <p
+            style="
+                color:#667;
+                margin-bottom:15px;
+            "
+        >
+
+            Select a farmer from the queue.
+
+        </p>
+
+
+        <div class="form-grid">
+
+
+            <input
+                type="number"
+                id="bookingId"
+                placeholder="Booking ID"
+            >
+
+
+            <input
+                type="number"
+                id="farmerId"
+                placeholder="Farmer ID"
+            >
+
+
+            <input
+                type="number"
+                id="cropId"
+                placeholder="Crop ID"
+            >
+
+
+            <input
+                type="number"
+                id="quantity"
+                placeholder="Quantity (kg)"
+            >
+
+
+            <input
+                type="number"
+                id="rate"
+                placeholder="Rate / kg"
+            >
+
+        </div>
+
+
+        <button
+            class="form-button"
+            onclick="completeProcurement()"
+        >
+
+            📦 Complete Procurement
+
+        </button>
+
+
+        <div
+            id="procurementMessage"
+            class="message"
+        ></div>
+
+    </div>
+
+
+
+    <!-- =========================
+         PAYMENT
+    ========================= -->
+
+    <div class="card">
+
+        <h2>
+            💰 Complete Payment
+        </h2>
+
+
+        <div class="form-grid">
+
+
+            <input
+                type="number"
+                id="paymentBookingId"
+                placeholder="Booking ID"
+            >
+
+
+            <input
+                type="number"
+                id="paymentFarmerId"
+                placeholder="Farmer ID"
+            >
+
+
+            <input
+                type="number"
+                id="paymentAmount"
+                placeholder="Amount"
+            >
+
+
+            <select id="paymentMethod">
+
+                <option>
+                    Bank Transfer
+                </option>
+
+                <option>
+                    UPI
+                </option>
+
+                <option>
+                    Cash
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <button
+            class="form-button"
+            onclick="completePayment()"
+        >
+
+            💰 Complete Payment
+
+        </button>
+
+
+        <div
+            id="paymentMessage"
+            class="message"
+        ></div>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+// =================================================
+// GLOBAL QUEUE
+// =================================================
+
+let queueData = [];
+
+
+// =================================================
+// LOAD QUEUE
+// =================================================
+
+async function loadQueue() {
+
+    const centreId =
+        document.getElementById(
+            "centre"
+        ).value;
+
+
+    const table =
+        document.getElementById(
+            "queueTable"
+        );
+
+
+    table.innerHTML =
+        "Loading queue...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/staff/queue/${centreId}`
+            );
+
+
+        const data =
+            await response.json();
+
+
+        // -----------------------------------------
+        // NO FARMERS
+        // -----------------------------------------
+
+        if (!response.ok) {
+
+            queueData = [];
+
+            updateKPI();
+
+
+            table.innerHTML = `
+
+                <div class="empty">
+
+                    <div
+                        style="
+                            font-size:40px;
+                            margin-bottom:10px;
+                        "
+                    >
+                        👥
+                    </div>
+
+                    <h3>
+                        No Farmers Waiting
+                    </h3>
+
+                    <p>
+                        There are currently no farmers
+                        in the waiting queue.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        queueData = data;
+
+
+        updateKPI();
+
+
+        // -----------------------------------------
+        // TABLE
+        // -----------------------------------------
+
+        table.innerHTML = `
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Token
+                        </th>
+
+                        <th>
+                            Position
+                        </th>
+
+                        <th>
+                            Farmer
+                        </th>
+
+                        <th>
+                            Booking ID
+                        </th>
+
+                        <th>
+                            Crop
+                        </th>
+
+                        <th>
+                            Quantity
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    ${
+
+                        data.map(
+                            farmer => `
+
+                            <tr>
+
+                                <td>
+
+                                    <b>
+                                        ${farmer.token_number}
+                                    </b>
+
+                                </td>
+
+
+                                <td>
+                                    ${farmer.position}
+                                </td>
+
+
+                                <td>
+                                    ${farmer.farmer_name}
+                                </td>
+
+
+                                <td>
+                                    ${farmer.booking_id}
+                                </td>
+
+
+                                <td>
+                                    ${
+                                        farmer.crop_name ||
+                                        "--"
+                                    }
+                                </td>
+
+
+                                <td>
+                                    ${
+                                        farmer.crop_quantity ||
+                                        "--"
+                                    }
+                                    kg
+                                </td>
+
+
+                                <td>
+
+                                    <button
+                                        class="select-btn"
+                                        onclick="
+                                            selectFarmer(
+                                                ${farmer.booking_id},
+                                                ${farmer.farmer_id},
+                                                ${farmer.crop_id || 0},
+                                                ${farmer.crop_quantity || 0}
+                                            )
+                                        "
+                                    >
+
+                                        Select
+
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+                        `
+                        ).join("")
+
+                    }
+
+                </tbody>
+
+            </table>
+
+        `;
+
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+
+        table.innerHTML = `
+
+            <div class="empty">
+
+                ❌ Unable to connect to server.
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+// =================================================
+// UPDATE KPI
+// =================================================
+
+function updateKPI() {
+
+    document.getElementById(
+        "waitingCount"
+    ).textContent =
+        queueData.length;
+
+
+    document.getElementById(
+        "nextToken"
+    ).textContent =
+
+        queueData.length > 0
+
+            ? queueData[0].token_number
+
+            : "--";
+
+}
+
+
+// =================================================
+// SELECT FARMER
+// =================================================
+
+function selectFarmer(
+    bookingId,
+    farmerId,
+    cropId,
+    quantity
+) {
+
+
+    document.getElementById(
+        "bookingId"
+    ).value =
+        bookingId;
+
+
+    document.getElementById(
+        "farmerId"
+    ).value =
+        farmerId;
+
+
+    document.getElementById(
+        "cropId"
+    ).value =
+        cropId;
+
+
+    document.getElementById(
+        "quantity"
+    ).value =
+        quantity;
+
+
+    document.getElementById(
+        "paymentBookingId"
+    ).value =
+        bookingId;
+
+
+    document.getElementById(
+        "paymentFarmerId"
+    ).value =
+        farmerId;
+
+
+    document.getElementById(
+        "quantity"
+    ).focus();
+
+
+    window.scrollTo({
+
+        top:
+            document.body.scrollHeight,
+
+        behavior:
+            "smooth"
+
+    });
+
+}
+
+
+// =================================================
+// COMPLETE PROCUREMENT
+// =================================================
+
+async function completeProcurement() {
+
+
+    const message =
+        document.getElementById(
+            "procurementMessage"
+        );
+
+
+    message.style.display =
+        "none";
+
+
+    const bookingId =
+        Number(
+            document.getElementById(
+                "bookingId"
+            ).value
+        );
+
+
+    const farmerId =
+        Number(
+            document.getElementById(
+                "farmerId"
+            ).value
+        );
+
+
+    const cropId =
+        Number(
+            document.getElementById(
+                "cropId"
+            ).value
+        );
+
+
+    const quantity =
+        Number(
+            document.getElementById(
+                "quantity"
+            ).value
+        );
+
+
+    const rate =
+        Number(
+            document.getElementById(
+                "rate"
+            ).value
+        );
+
+
+    if (
+        !bookingId ||
+        !farmerId ||
+        !cropId ||
+        !quantity ||
+        !rate
+    ) {
+
+        showMessage(
+
+            message,
+
+            "Please fill all procurement fields.",
+
+            false
+
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                "/api/procurement",
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            booking_id:
+                                bookingId,
+
+                            farmer_id:
+                                farmerId,
+
+                            crop_id:
+                                cropId,
+
+                            quantity:
+                                quantity,
+
+                            rate:
+                                rate
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Procurement failed."
+            );
+
+        }
+
+
+        showMessage(
+
+            message,
+
+            `✅ Procurement completed successfully. Total: ₹${data.total_amount}`,
+
+            true
+
+        );
+
+
+        document.getElementById(
+            "paymentAmount"
+        ).value =
+            data.total_amount;
+
+
+        loadQueue();
+
+
+    }
+
+    catch (error) {
+
+        showMessage(
+
+            message,
+
+            "❌ " + error.message,
+
+            false
+
+        );
+
+    }
+
+}
+
+
+// =================================================
+// COMPLETE PAYMENT
+// =================================================
+
+async function completePayment() {
+
+
+    const message =
+        document.getElementById(
+            "paymentMessage"
+        );
+
+
+    message.style.display =
+        "none";
+
+
+    const bookingId =
+        Number(
+            document.getElementById(
+                "paymentBookingId"
+            ).value
+        );
+
+
+    const farmerId =
+        Number(
+            document.getElementById(
+                "paymentFarmerId"
+            ).value
+        );
+
+
+    const amount =
+        Number(
+            document.getElementById(
+                "paymentAmount"
+            ).value
+        );
+
+
+    const paymentMethod =
+        document.getElementById(
+            "paymentMethod"
+        ).value;
+
+
+    if (
+        !bookingId ||
+        !farmerId ||
+        !amount
+    ) {
+
+        showMessage(
+
+            message,
+
+            "Please fill payment details.",
+
+            false
+
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                "/api/payments",
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            booking_id:
+                                bookingId,
+
+                            farmer_id:
+                                farmerId,
+
+                            amount:
+                                amount,
+
+                            payment_method:
+                                paymentMethod
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Payment failed."
+            );
+
+        }
+
+
+        showMessage(
+
+            message,
+
+            `✅ Payment completed successfully. Transaction ID: ${data.transaction_id}`,
+
+            true
+
+        );
+
+
+        loadQueue();
+
+
+    }
+
+    catch (error) {
+
+        showMessage(
+
+            message,
+
+            "❌ " + error.message,
+
+            false
+
+        );
+
+    }
+
+}
+
+
+// =================================================
+// SHOW MESSAGE
+// =================================================
+
+function showMessage(
+    element,
+    text,
+    success
+) {
+
+    element.textContent =
+        text;
+
+
+    element.className =
+        success
+            ? "message success"
+            : "message error";
+
+
+    element.style.display =
+        "block";
+
+}
+
+
+// =================================================
+// START
+// =================================================
+
+loadQueue();
+
+
+</script>
+
+
+</body>
+
+</html>

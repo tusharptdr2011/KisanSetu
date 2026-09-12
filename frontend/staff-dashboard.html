@@ -1,0 +1,2150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kisan Setu - Staff Dashboard</title>
+
+    <style>
+
+        :root {
+            --green-950: #08361f;
+            --green-900: #0b3d24;
+            --green-800: #0f5b35;
+            --green-700: #176b3a;
+            --green-600: #21834a;
+            --green-100: #eaf7ee;
+            --green-50: #f5fbf7;
+            --ink: #173126;
+            --muted: #6a7a71;
+            --border: rgba(23, 61, 43, 0.10);
+            --white: #fff;
+            --shadow: 0 12px 35px rgba(20, 62, 40, .08);
+            --shadow-hover: 0 18px 42px rgba(20, 62, 40, .13);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 8% 0%, rgba(33,131,74,.10), transparent 28%),
+                radial-gradient(circle at 96% 8%, rgba(121,180,142,.12), transparent 25%),
+                #f4f8f5;
+            color: var(--ink);
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(8, 54, 31, .97);
+            backdrop-filter: blur(14px);
+            color: white;
+            padding: 18px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 22px rgba(8,45,26,.16);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -.4px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .nav-right span {
+            font-weight: 600;
+            color: #eef8f1;
+        }
+
+        .logout {
+            background: white;
+            color: var(--green-800);
+            border: none;
+            padding: 10px 17px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 800;
+            transition: .2s ease;
+        }
+
+        .logout:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 7px 18px rgba(0,0,0,.15);
+        }
+
+        .container {
+            width: 94%;
+            max-width: 1550px;
+            margin: 34px auto 60px;
+        }
+
+        .welcome {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #fff 0%, #eef9f1 100%);
+            padding: 42px 46px;
+            border: 1px solid var(--border);
+            border-radius: 26px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .welcome::after {
+            content: "🌾";
+            position: absolute;
+            right: 38px;
+            top: 12px;
+            font-size: 82px;
+            opacity: .11;
+            transform: rotate(-10deg);
+        }
+
+        .welcome h1 {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 9px;
+            font-size: clamp(32px, 4vw, 46px);
+            letter-spacing: -.8px;
+            color: var(--green-950);
+        }
+
+        .welcome p {
+            position: relative;
+            z-index: 1;
+            color: var(--muted);
+            font-size: 16px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            margin-bottom: 26px;
+        }
+
+        .card {
+            position: relative;
+            overflow: hidden;
+            background: var(--white);
+            padding: 31px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            transition: transform .22s ease, box-shadow .22s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            width: 92px;
+            height: 92px;
+            border-radius: 50%;
+            background: var(--green-100);
+            right: -36px;
+            top: -36px;
+        }
+
+        .card h3 {
+            position: relative;
+            margin-bottom: 12px;
+            color: var(--green-700);
+            font-size: 16px;
+        }
+
+        .big {
+            position: relative;
+            font-size: 34px;
+            font-weight: 850;
+            color: var(--green-950);
+            margin-bottom: 5px;
+        }
+
+        .card p {
+            position: relative;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .section {
+            background: rgba(255,255,255,.97);
+            padding: 31px;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .section h2 {
+            margin-bottom: 19px;
+            color: var(--green-950);
+            font-size: 26px;
+            letter-spacing: -.3px;
+        }
+
+        .centre-info {
+            background: linear-gradient(135deg, #effaf2, #e6f5eb);
+            border: 1px solid rgba(23,107,58,.12);
+            padding: 24px;
+            border-radius: 17px;
+        }
+
+        .centre-info h3 {
+            margin-bottom: 9px;
+            color: var(--green-950);
+            font-size: 21px;
+        }
+
+        .centre-info p {
+            margin: 5px 0;
+            color: var(--muted);
+        }
+
+        .queue-container {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+            background: white;
+        }
+
+        th, td {
+            padding: 17px;
+            text-align: left;
+            border-bottom: 1px solid rgba(23,61,43,.08);
+        }
+
+        th {
+            background: #eef8f0;
+            color: var(--green-700);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        tbody tr {
+            transition: background .18s ease;
+        }
+
+        tbody tr:hover { background: #f7fbf8; }
+
+        .token {
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--green-700);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 11px;
+            border-radius: 20px;
+            background: #fff4d6;
+            color: #7b5d08;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .call-btn, .action-btn, .refresh-btn {
+            background: linear-gradient(135deg, var(--green-700), var(--green-600));
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 800;
+            transition: .2s ease;
+        }
+
+        .call-btn {
+            padding: 9px 14px;
+            border-radius: 9px;
+        }
+
+        .call-btn:hover, .action-btn:hover, .refresh-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(23,107,58,.22);
+        }
+
+        .empty {
+            text-align: center;
+            padding: 32px;
+            color: var(--muted);
+        }
+
+        .current-farmer {
+            display: none;
+            background: linear-gradient(135deg, #e9f8ed, #f5fbf7);
+            border: 1px solid rgba(23,107,58,.13);
+            padding: 31px;
+            border-radius: 18px;
+            margin-top: 22px;
+        }
+
+        .current-farmer h3 {
+            color: var(--green-800);
+            margin-bottom: 17px;
+            font-size: 20px;
+        }
+
+        .farmer-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .detail {
+            background: white;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+        }
+
+        .detail strong {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--green-700);
+            font-size: 13px;
+        }
+
+        .form-box {
+            display: none;
+            margin-top: 25px;
+            background: #fbfdfb;
+            border: 1px solid var(--border);
+            padding: 31px;
+            border-radius: 17px;
+        }
+
+        .form-box h3 {
+            color: var(--green-800);
+            margin-bottom: 19px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 750;
+            margin-bottom: 7px;
+            color: var(--ink);
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 1px solid #d6ded8;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            background: white;
+            transition: .2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--green-600);
+            box-shadow: 0 0 0 3px rgba(33,131,74,.10);
+        }
+
+        .total-box {
+            margin-top: 20px;
+            padding: 24px;
+            background: #e8f7ec;
+            border: 1px solid rgba(23,107,58,.10);
+            border-radius: 13px;
+        }
+
+        .total-box p { color: var(--muted); }
+
+        .total-box span {
+            display: block;
+            margin-top: 4px;
+            font-size: 34px;
+            font-weight: 900;
+            color: var(--green-700);
+        }
+
+        .action-btn {
+            margin-top: 20px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 13px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .success-message {
+            background: #e6f7ea;
+            color: var(--green-700);
+        }
+
+        .error-message {
+            background: #ffe8e8;
+            color: #a00000;
+        }
+
+        .payment-box {
+            display: none;
+            background: linear-gradient(135deg, #fffdf0, #fffbea);
+            border: 1px solid #eadf9a;
+            padding: 31px;
+            border-radius: 17px;
+        }
+
+        .payment-box h3 {
+            color: #725c00;
+            margin-bottom: 10px;
+        }
+
+        .payment-summary {
+            background: white;
+            border: 1px solid rgba(0,0,0,.06);
+            padding: 24px;
+            border-radius: 13px;
+            margin-bottom: 20px;
+        }
+
+        .payment-summary p { margin: 7px 0; }
+
+        .payment-amount {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--green-700);
+            margin-top: 4px;
+        }
+
+        .refresh-btn {
+            padding: 11px 18px;
+            border-radius: 11px;
+            margin-bottom: 15px;
+        }
+
+
+
+        .system-strip {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            flex-wrap: wrap;
+            margin: 0 0 24px;
+            padding: 13px 18px;
+            background: rgba(255,255,255,.88);
+            border: 1px solid rgba(23,107,58,.10);
+            border-radius: 15px;
+            box-shadow: 0 7px 20px rgba(20,62,40,.05);
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .system-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            white-space: nowrap;
+        }
+
+        .system-item strong {
+            color: var(--green-700);
+        }
+
+        .system-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #20a05a;
+            box-shadow: 0 0 0 4px rgba(32,160,90,.10);
+        }
+
+        .queue-container {
+            box-shadow: 0 5px 18px rgba(20,62,40,.04);
+        }
+
+        .empty {
+            min-height: 105px;
+            vertical-align: middle;
+        }
+
+        @media(max-width: 760px) {
+            .system-strip {
+                justify-content: flex-start;
+                gap: 14px 20px;
+            }
+        }
+
+        /* ================= ANALYTICS ================= */
+        .analytics-section {
+            background: linear-gradient(135deg, rgba(255,255,255,.98), rgba(246,252,248,.98));
+        }
+
+        .section-heading-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .section-heading-row h2 {
+            margin-bottom: 4px;
+        }
+
+        .section-subtitle {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .analytics-card {
+            position: relative;
+            overflow: hidden;
+            background: white;
+            border: 1px solid rgba(23,107,58,.10);
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(20,62,40,.06);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .analytics-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px rgba(20,62,40,.10);
+        }
+
+        .analytics-card::after {
+            content: "";
+            position: absolute;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            right: -25px;
+            top: -25px;
+            background: var(--green-100);
+            opacity: .9;
+        }
+
+        .analytics-icon {
+            position: relative;
+            z-index: 1;
+            width: 40px;
+            height: 40px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: var(--green-50);
+            border: 1px solid rgba(23,107,58,.08);
+            font-size: 21px;
+            margin-bottom: 13px;
+        }
+
+        .analytics-label {
+            position: relative;
+            z-index: 1;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 750;
+            margin-bottom: 6px;
+        }
+
+        .analytics-value {
+            position: relative;
+            z-index: 1;
+            color: var(--green-950);
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: -.4px;
+        }
+
+        .analytics-meta {
+            position: relative;
+            z-index: 1;
+            margin-top: 5px;
+            color: #789086;
+            font-size: 11px;
+        }
+
+        .live-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 11px;
+            border-radius: 999px;
+            background: #e9f8ed;
+            color: var(--green-700);
+            font-size: 11px;
+            font-weight: 850;
+            white-space: nowrap;
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #20a05a;
+            box-shadow: 0 0 0 4px rgba(32,160,90,.10);
+        }
+
+        @media(max-width: 1050px) {
+            .analytics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media(max-width: 700px) {
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-heading-row {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+
+        @media(max-width: 900px) {
+            .cards, .farmer-details {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid { grid-template-columns: 1fr; }
+            .container { width: 94%; }
+            .welcome { padding: 31px; }
+            .section { padding: 22px; }
+        }
+
+        @media(max-width: 560px) {
+            nav { padding: 14px 4%; }
+            .logo { font-size: 21px; }
+            .nav-right span { display: none; }
+            .container { width: 94%; margin-top: 20px; }
+            .welcome h1 { font-size: 28px; }
+            .welcome::after { font-size: 55px; right: 15px; }
+            .section h2 { font-size: 20px; }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav>
+
+        <div class="logo">
+            🌾 Kisan Setu
+        </div>
+
+        <div class="nav-right">
+
+            <span>
+                Procurement Staff
+            </span>
+
+            <button
+                class="logout"
+                onclick="logout()"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <div class="container">
+
+
+        <!-- WELCOME -->
+
+        <div class="welcome">
+
+            <h1>
+                Procurement Centre Dashboard 👨‍💼
+            </h1>
+
+            <p>
+                Manage today's farmer queue and procurement process.
+            </p>
+
+        </div>
+
+
+
+
+        <div class="system-strip">
+            <div class="system-item">
+                <span class="system-dot"></span>
+                <strong>System Online</strong>
+            </div>
+            <div class="system-item">📡 Live Queue</div>
+            <div class="system-item">💳 Secure Payments</div>
+            <div class="system-item">📊 Real-time Analytics</div>
+        </div>
+
+        <!-- ================= SUMMARY CARDS ================= -->
+
+        <div class="cards">
+
+
+            <div class="card">
+
+                <h3>
+                    📍 Centre
+                </h3>
+
+                <div class="big">
+                    Indore Mandi
+                </div>
+
+                <p>
+                    Madhya Pradesh
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    👥 Waiting Farmers
+                </h3>
+
+                <div
+                    class="big"
+                    id="waitingCount"
+                >
+                    0
+                </div>
+
+                <p>
+                    Farmers in queue
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    🎟️ Next Token
+                </h3>
+
+                <div
+                    class="big"
+                    id="nextToken"
+                >
+                    --
+                </div>
+
+                <p>
+                    Next farmer
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+
+        <!-- ================= TODAY'S ANALYTICS ================= -->
+        <div class="section analytics-section">
+            <div class="section-heading-row">
+                <div>
+                    <h2>📊 Today's Analytics</h2>
+                    <p class="section-subtitle">Real-time procurement performance</p>
+                </div>
+
+                <div class="live-pill">
+                    <span class="live-dot"></span>
+                    Live Data
+                </div>
+            </div>
+
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <div class="analytics-icon">👨‍🌾</div>
+                    <div class="analytics-label">Today's Farmers</div>
+                    <div class="analytics-value" id="analyticsTodayFarmers">--</div>
+                    <div class="analytics-meta">Farmers served today</div>
+                </div>
+
+                <div class="analytics-card">
+                    <div class="analytics-icon">🌾</div>
+                    <div class="analytics-label">Quantity Procured</div>
+                    <div class="analytics-value" id="analyticsQuantity">--</div>
+                    <div class="analytics-meta">Total crop quantity</div>
+                </div>
+
+                <div class="analytics-card">
+                    <div class="analytics-icon">📦</div>
+                    <div class="analytics-label">Completed Procurement</div>
+                    <div class="analytics-value" id="analyticsCompleted">--</div>
+                    <div class="analytics-meta">Completed transactions</div>
+                </div>
+
+                <div class="analytics-card">
+                    <div class="analytics-icon">💰</div>
+                    <div class="analytics-label">Total Amount Paid</div>
+                    <div class="analytics-value" id="analyticsPaid">--</div>
+                    <div class="analytics-meta">Payments completed today</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= CENTRE ================= -->
+
+        <div class="section">
+
+            <h2>
+                📍 Procurement Centre
+            </h2>
+
+            <div class="centre-info">
+
+                <h3>
+                    Indore Mandi
+                </h3>
+
+                <p>
+                    📍 Indore, Madhya Pradesh
+                </p>
+
+                <p>
+                    Capacity: 100 farmers
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================= QUEUE ================= -->
+
+        <div class="section">
+
+            <h2>
+                ⏳ Today's Farmer Queue
+            </h2>
+
+            <button
+                class="refresh-btn"
+                onclick="loadQueue()"
+            >
+                🔄 Refresh Queue
+            </button>
+
+
+            <div class="queue-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Position</th>
+                            <th>Token</th>
+                            <th>Farmer</th>
+                            <th>Mobile</th>
+                            <th>Crop</th>
+                            <th>Quantity</th>
+                            <th>Status</th>
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="queueTable">
+
+                        <tr>
+
+                            <td
+                                colspan="8"
+                                class="empty"
+                            >
+                                Loading queue...
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+
+            <!-- ================= CURRENT FARMER ================= -->
+
+            <div
+                class="current-farmer"
+                id="currentFarmer"
+            >
+
+                <h3>
+                    🔔 Current Farmer
+                </h3>
+
+
+                <div class="farmer-details">
+
+
+                    <div class="detail">
+
+                        <strong>
+                            Token
+                        </strong>
+
+                        <span id="currentToken">
+                            --
+                        </span>
+
+                    </div>
+
+
+                    <div class="detail">
+
+                        <strong>
+                            Farmer
+                        </strong>
+
+                        <span id="currentName">
+                            --
+                        </span>
+
+                    </div>
+
+
+                    <div class="detail">
+
+                        <strong>
+                            Crop
+                        </strong>
+
+                        <span id="currentCrop">
+                            --
+                        </span>
+
+                    </div>
+
+
+                    <div class="detail">
+
+                        <strong>
+                            Quantity
+                        </strong>
+
+                        <span id="currentQuantity">
+                            --
+                        </span>
+
+                    </div>
+
+
+                    <div class="detail">
+
+                        <strong>
+                            Mobile
+                        </strong>
+
+                        <span id="currentMobile">
+                            --
+                        </span>
+
+                    </div>
+
+
+                    <div class="detail">
+
+                        <strong>
+                            Queue Position
+                        </strong>
+
+                        <span id="currentPosition">
+                            --
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ================= PROCUREMENT FORM ================= -->
+
+                <div
+                    class="form-box"
+                    id="procurementForm"
+                >
+
+                    <h3>
+                        🌾 Procurement Details
+                    </h3>
+
+
+                    <div class="form-grid">
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Crop
+                            </label>
+
+                            <input
+                                type="text"
+                                id="procurementCrop"
+                                readonly
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Quantity (kg)
+                            </label>
+
+                            <input
+                                type="number"
+                                id="procurementQuantity"
+                                min="1"
+                                step="0.01"
+                                oninput="calculateTotal()"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Rate (₹ per kg)
+                            </label>
+
+                            <input
+                                type="number"
+                                id="procurementRate"
+                                min="1"
+                                step="0.01"
+                                placeholder="Enter rate"
+                                oninput="calculateTotal()"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TOTAL -->
+
+                    <div class="total-box">
+
+                        <p>
+                            Total Procurement Amount
+                        </p>
+
+                        <span id="totalAmount">
+                            ₹0.00
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        class="action-btn"
+                        onclick="completeProcurement()"
+                    >
+                        ✅ Complete Procurement
+                    </button>
+
+
+                    <div
+                        class="message"
+                        id="procurementMessage"
+                    ></div>
+
+                </div>
+
+
+
+                <!-- ================= PAYMENT FORM ================= -->
+
+                <div
+                    class="form-box"
+                    id="paymentForm"
+                >
+
+                    <h3>
+                        💰 Payment Details
+                    </h3>
+
+
+                    <div class="payment-summary">
+
+                        <p>
+                            <strong>
+                                Farmer:
+                            </strong>
+
+                            <span id="paymentFarmer">
+                                --
+                            </span>
+                        </p>
+
+
+                        <p>
+                            <strong>
+                                Token:
+                            </strong>
+
+                            <span id="paymentToken">
+                                --
+                            </span>
+                        </p>
+
+
+                        <p>
+                            <strong>
+                                Procurement Amount:
+                            </strong>
+                        </p>
+
+
+                        <div
+                            class="payment-amount"
+                            id="paymentAmount"
+                        >
+                            ₹0.00
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Payment Method
+                            </label>
+
+                            <select id="paymentMethod">
+
+                                <option value="Bank Transfer">
+                                    Bank Transfer
+                                </option>
+
+                                <option value="UPI">
+                                    UPI
+                                </option>
+
+                                <option value="Cash">
+                                    Cash
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Transaction ID
+                            </label>
+
+                            <input
+                                type="text"
+                                id="transactionId"
+                                placeholder="Enter transaction ID"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="action-btn"
+                        onclick="completePayment()"
+                    >
+                        ✅ Complete Payment
+                    </button>
+
+
+                    <div
+                        class="message"
+                        id="paymentMessage"
+                    ></div>
+
+                </div>
+
+
+
+                <!-- ================= FINAL SUCCESS ================= -->
+
+                <div
+                    class="payment-box"
+                    id="finalSuccess"
+                >
+
+                    <h3>
+                        🎉 Transaction Completed
+                    </h3>
+
+                    <p>
+                        Farmer procurement and payment have been completed successfully.
+                    </p>
+
+                    <br>
+
+                    <p>
+                        <strong>
+                            Token:
+                        </strong>
+
+                        <span id="finalToken">
+                            --
+                        </span>
+                    </p>
+
+                    <p>
+                        <strong>
+                            Farmer:
+                        </strong>
+
+                        <span id="finalFarmer">
+                            --
+                        </span>
+                    </p>
+
+                    <p>
+                        <strong>
+                            Amount Paid:
+                        </strong>
+
+                        <span id="finalAmount">
+                            ₹0
+                        </span>
+                    </p>
+
+                    <p>
+                        <strong>
+                            Payment Status:
+                        </strong>
+
+                        ✅ Completed
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+<script>
+
+    // =====================================
+    // API
+    // =====================================
+
+    const API = "http://10.57.84.77:5000";
+
+
+    // =====================================
+    // CENTRE
+    // =====================================
+
+    const centreId = 1;
+
+
+    // =====================================
+    // CURRENT FARMER
+    // =====================================
+
+    let selectedFarmer = null;
+
+    let completedAmount = 0;
+
+
+    // =====================================
+    // LOAD QUEUE
+    // =====================================
+
+    async function loadQueue() {
+
+        const table =
+            document.getElementById("queueTable");
+
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="8"
+                    class="empty"
+                >
+                    Loading queue...
+                </td>
+
+            </tr>
+
+        `;
+
+
+        try {
+
+            const response = await fetch(
+                `${API}/api/staff/queue/${centreId}`
+            );
+
+
+            if (!response.ok) {
+
+                table.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            class="empty"
+                        >
+                            No farmers waiting.
+                        </td>
+
+                    </tr>
+
+                `;
+
+                document.getElementById("waitingCount")
+                    .textContent = "0";
+
+                document.getElementById("nextToken")
+                    .textContent = "--";
+
+                return;
+
+            }
+
+
+            const queue =
+                await response.json();
+
+
+            document.getElementById("waitingCount")
+                .textContent = queue.length;
+
+
+            if (queue.length > 0) {
+
+                document.getElementById("nextToken")
+                    .textContent =
+                    queue[0].token_number;
+
+            } else {
+
+                document.getElementById("nextToken")
+                    .textContent = "--";
+
+            }
+
+
+            table.innerHTML = "";
+
+
+            queue.forEach((farmer) => {
+
+                const row =
+                    document.createElement("tr");
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${farmer.position}
+                    </td>
+
+                    <td class="token">
+                        ${farmer.token_number}
+                    </td>
+
+                    <td>
+                        ${farmer.farmer_name}
+                    </td>
+
+                    <td>
+                        ${farmer.mobile || "Not available"}
+                    </td>
+
+                    <td>
+                        ${farmer.crop_name || "Not available"}
+                    </td>
+
+                    <td>
+                        ${farmer.crop_quantity || "--"} kg
+                    </td>
+
+                    <td>
+
+                        <span class="status-badge">
+                            Waiting
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="call-btn"
+                            onclick='callFarmer(${JSON.stringify(farmer)})'
+                        >
+                            📢 Call
+                        </button>
+
+                    </td>
+
+                `;
+
+
+                table.appendChild(row);
+
+            });
+
+
+        } catch (error) {
+
+            console.log(
+                "Queue error:",
+                error
+            );
+
+
+            table.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="8"
+                        class="empty"
+                    >
+                        Unable to connect to server.
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+    }
+
+
+    // =====================================
+    // CALL FARMER
+    // =====================================
+
+    function callFarmer(farmer) {
+
+        selectedFarmer = farmer;
+
+
+        document.getElementById("currentFarmer")
+            .style.display = "block";
+
+
+        document.getElementById("currentToken")
+            .textContent =
+            farmer.token_number;
+
+
+        document.getElementById("currentName")
+            .textContent =
+            farmer.farmer_name;
+
+
+        document.getElementById("currentCrop")
+            .textContent =
+            farmer.crop_name || "Not available";
+
+
+        document.getElementById("currentQuantity")
+            .textContent =
+            (farmer.crop_quantity || "--") + " kg";
+
+
+        document.getElementById("currentMobile")
+            .textContent =
+            farmer.mobile || "Not available";
+
+
+        document.getElementById("currentPosition")
+            .textContent =
+            farmer.position;
+
+
+        // Show procurement form
+
+        document.getElementById("procurementForm")
+            .style.display = "block";
+
+
+        document.getElementById("paymentForm")
+            .style.display = "none";
+
+
+        document.getElementById("finalSuccess")
+            .style.display = "none";
+
+
+        // Fill crop
+
+        document.getElementById("procurementCrop")
+            .value =
+            farmer.crop_name || "";
+
+
+        // Fill quantity
+
+        document.getElementById("procurementQuantity")
+            .value =
+            farmer.crop_quantity || "";
+
+
+        // Clear rate
+
+        document.getElementById("procurementRate")
+            .value = "";
+
+
+        document.getElementById("totalAmount")
+            .textContent = "₹0.00";
+
+
+        document.getElementById("procurementMessage")
+            .style.display = "none";
+
+
+        document.getElementById("currentFarmer")
+            .scrollIntoView({
+                behavior: "smooth"
+            });
+
+
+        alert(
+            "Calling farmer " +
+            farmer.token_number +
+            " - " +
+            farmer.farmer_name
+        );
+
+    }
+
+
+    // =====================================
+    // CALCULATE TOTAL
+    // =====================================
+
+    function calculateTotal() {
+
+        const quantity =
+            Number(
+                document.getElementById(
+                    "procurementQuantity"
+                ).value
+            );
+
+
+        const rate =
+            Number(
+                document.getElementById(
+                    "procurementRate"
+                ).value
+            );
+
+
+        const total =
+            quantity * rate;
+
+
+        document.getElementById("totalAmount")
+            .textContent =
+            "₹" +
+            (total || 0).toFixed(2);
+
+    }
+
+
+    // =====================================
+    // COMPLETE PROCUREMENT
+    // =====================================
+
+    async function completeProcurement() {
+
+        if (!selectedFarmer) {
+
+            alert(
+                "Please select a farmer first."
+            );
+
+            return;
+
+        }
+
+
+        const quantity =
+            Number(
+                document.getElementById(
+                    "procurementQuantity"
+                ).value
+            );
+
+
+        const rate =
+            Number(
+                document.getElementById(
+                    "procurementRate"
+                ).value
+            );
+
+
+        if (!quantity || quantity <= 0) {
+
+            alert(
+                "Please enter a valid quantity."
+            );
+
+            return;
+
+        }
+
+
+        if (!rate || rate <= 0) {
+
+            alert(
+                "Please enter the procurement rate."
+            );
+
+            return;
+
+        }
+
+
+        if (!selectedFarmer.crop_id) {
+
+            alert(
+                "Crop ID is missing."
+            );
+
+            return;
+
+        }
+
+
+        const total =
+            quantity * rate;
+
+
+        const message =
+            document.getElementById(
+                "procurementMessage"
+            );
+
+
+        message.style.display = "block";
+
+        message.className =
+            "message";
+
+        message.textContent =
+            "Processing procurement...";
+
+
+        try {
+
+            const response = await fetch(
+                `${API}/api/procurement`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        booking_id:
+                            selectedFarmer.booking_id,
+
+                        farmer_id:
+                            selectedFarmer.farmer_id,
+
+                        crop_id:
+                            selectedFarmer.crop_id,
+
+                        quantity:
+                            quantity,
+
+                        rate:
+                            rate
+
+                    })
+                }
+            );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Procurement failed"
+                );
+
+            }
+
+
+            completedAmount =
+                Number(
+                    data.total_amount || total
+                );
+
+
+            message.className =
+                "message success-message";
+
+
+            message.textContent =
+                "✅ Procurement completed successfully!";
+
+
+            // ---------------------------------
+            // SHOW PAYMENT FORM
+            // ---------------------------------
+
+            document.getElementById(
+                "procurementForm"
+            ).style.display = "none";
+
+
+            document.getElementById(
+                "paymentForm"
+            ).style.display = "block";
+
+
+            document.getElementById(
+                "paymentFarmer"
+            ).textContent =
+                selectedFarmer.farmer_name;
+
+
+            document.getElementById(
+                "paymentToken"
+            ).textContent =
+                selectedFarmer.token_number;
+
+
+            document.getElementById(
+                "paymentAmount"
+            ).textContent =
+                "₹" +
+                completedAmount.toFixed(2);
+
+
+            document.getElementById(
+                "transactionId"
+            ).value = "";
+
+
+            document.getElementById(
+                "paymentMessage"
+            ).style.display = "none";
+
+
+            document.getElementById(
+                "paymentForm"
+            ).scrollIntoView({
+                behavior: "smooth"
+            });
+
+
+        } catch (error) {
+
+            console.log(
+                "Procurement error:",
+                error
+            );
+
+
+            message.className =
+                "message error-message";
+
+
+            message.textContent =
+                "❌ " + error.message;
+
+        }
+
+    }
+
+
+    // =====================================
+    // COMPLETE PAYMENT
+    // =====================================
+
+    async function completePayment() {
+
+        if (!selectedFarmer) {
+
+            alert(
+                "No farmer selected."
+            );
+
+            return;
+
+        }
+
+
+        if (!completedAmount) {
+
+            alert(
+                "Procurement amount is missing."
+            );
+
+            return;
+
+        }
+
+
+        const paymentMethod =
+            document.getElementById(
+                "paymentMethod"
+            ).value;
+
+
+        const transactionId =
+            document.getElementById(
+                "transactionId"
+            ).value.trim();
+
+
+        // Transaction ID is optional for Cash
+
+        if (
+            paymentMethod !== "Cash" &&
+            !transactionId
+        ) {
+
+            alert(
+                "Please enter the transaction ID."
+            );
+
+            return;
+
+        }
+
+
+        const message =
+            document.getElementById(
+                "paymentMessage"
+            );
+
+
+        message.style.display = "block";
+
+        message.className =
+            "message";
+
+        message.textContent =
+            "Processing payment...";
+
+
+        try {
+
+            const response = await fetch(
+                `${API}/api/payments`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        booking_id:
+                            selectedFarmer.booking_id,
+
+                        farmer_id:
+                            selectedFarmer.farmer_id,
+
+                        amount:
+                            completedAmount,
+
+                        payment_method:
+                            paymentMethod,
+
+                        transaction_id:
+                            transactionId || null
+
+                    })
+                }
+            );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Payment failed"
+                );
+
+            }
+
+
+            // ---------------------------------
+            // PAYMENT SUCCESS
+            // ---------------------------------
+
+            message.className =
+                "message success-message";
+
+
+            message.textContent =
+                "✅ Payment completed successfully!";
+
+
+            document.getElementById(
+                "paymentForm"
+            ).style.display = "none";
+
+
+            document.getElementById(
+                "finalSuccess"
+            ).style.display = "block";
+
+
+            document.getElementById(
+                "finalToken"
+            ).textContent =
+                selectedFarmer.token_number;
+
+
+            document.getElementById(
+                "finalFarmer"
+            ).textContent =
+                selectedFarmer.farmer_name;
+
+
+            document.getElementById(
+                "finalAmount"
+            ).textContent =
+                "₹" +
+                completedAmount.toFixed(2);
+
+
+            document.getElementById(
+                "finalSuccess"
+            ).scrollIntoView({
+                behavior: "smooth"
+            });
+
+
+            alert(
+                "Payment completed successfully!\n\n" +
+                "Farmer: " +
+                selectedFarmer.farmer_name +
+                "\nToken: " +
+                selectedFarmer.token_number +
+                "\nAmount: ₹" +
+                completedAmount.toFixed(2)
+            );
+
+
+            // Refresh queue and analytics
+
+            loadQueue();
+            loadAnalytics();
+
+        } catch (error) {
+
+            console.log(
+                "Payment error:",
+                error
+            );
+
+
+            message.className =
+                "message error-message";
+
+
+            message.textContent =
+                "❌ " + error.message;
+
+        }
+
+    }
+
+
+
+    // =====================================
+    // LOAD TODAY'S ANALYTICS
+    // =====================================
+
+    async function loadAnalytics() {
+
+        try {
+
+            const response = await fetch(
+                `${API}/api/staff/analytics/${centreId}`
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message ||
+                    "Failed to load analytics"
+                );
+            }
+
+            document.getElementById(
+                "analyticsTodayFarmers"
+            ).textContent =
+                Number(
+                    data.todays_farmers || 0
+                ).toLocaleString("en-IN");
+
+            document.getElementById(
+                "analyticsQuantity"
+            ).textContent =
+                Number(
+                    data.total_quantity_procured || 0
+                ).toLocaleString("en-IN") +
+                " kg";
+
+            document.getElementById(
+                "analyticsCompleted"
+            ).textContent =
+                Number(
+                    data.completed_procurements || 0
+                ).toLocaleString("en-IN");
+
+            document.getElementById(
+                "analyticsPaid"
+            ).textContent =
+                "₹" +
+                Number(
+                    data.total_amount_paid || 0
+                ).toLocaleString("en-IN");
+
+        } catch (error) {
+
+            console.log(
+                "Analytics error:",
+                error
+            );
+
+        }
+
+    }
+
+    // =====================================
+    // LOGOUT
+    // =====================================
+
+    function logout() {
+
+        window.location.href =
+            "login.html";
+
+    }
+
+
+    // =====================================
+    // START
+    // =====================================
+
+    loadQueue();
+    loadAnalytics();
+
+</script>
+
+</body>
+
+</html>

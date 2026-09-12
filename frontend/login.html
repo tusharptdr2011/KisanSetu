@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kisan Setu | Farmer Login</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f3f8f5;
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            color: #14231d;
+        }
+
+        .login-container {
+            width: 900px;
+            min-height: 550px;
+
+            background: white;
+
+            display: grid;
+            grid-template-columns: 45% 55%;
+
+            border-radius: 18px;
+            overflow: hidden;
+
+            box-shadow:
+                0 15px 40px rgba(0, 70, 45, 0.12);
+        }
+
+        /* LEFT SIDE */
+
+        .login-image {
+
+            background:
+                linear-gradient(
+                    rgba(0, 70, 45, 0.35),
+                    rgba(0, 60, 40, 0.45)
+                ),
+                url("https://images.pexels.com/photos/30269788/pexels-photo-30269788.jpeg");
+
+            background-size: cover;
+            background-position: center;
+
+            position: relative;
+        }
+
+        .overlay {
+
+            height: 100%;
+            padding: 35px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            color: white;
+        }
+
+        .brand {
+
+            font-size: 23px;
+            font-weight: 800;
+        }
+
+        .image-content {
+            margin-bottom: 25px;
+        }
+
+        .image-content h1 {
+
+            font-size: 32px;
+            line-height: 1.2;
+
+            margin-bottom: 15px;
+        }
+
+        .image-content p {
+
+            max-width: 320px;
+
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* RIGHT SIDE */
+
+        .login-section {
+
+            padding: 50px;
+
+            display: flex;
+            align-items: center;
+        }
+
+        .login-form {
+            width: 100%;
+        }
+
+        .login-form h2 {
+
+            font-size: 29px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+
+            color: #727d78;
+            font-size: 14px;
+
+            margin-bottom: 30px;
+        }
+
+        /* INPUT */
+
+        .input-group {
+            margin-bottom: 19px;
+        }
+
+        .input-group label {
+
+            display: block;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+
+            width: 100%;
+            height: 48px;
+
+            border: 1px solid #d7e0db;
+            border-radius: 8px;
+
+            padding: 0 14px;
+
+            font-size: 14px;
+
+            outline: none;
+        }
+
+        .input-group input:focus {
+
+            border-color: #087747;
+
+            box-shadow:
+                0 0 0 3px rgba(8, 119, 71, 0.08);
+        }
+
+        /* PASSWORD */
+
+        .password-box {
+            position: relative;
+        }
+
+        .password-box input {
+            padding-right: 65px;
+        }
+
+        .show-password {
+
+            position: absolute;
+
+            right: 12px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            border: none;
+            background: transparent;
+
+            color: #087747;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+        /* LOGIN BUTTON */
+
+        .login-btn {
+
+            width: 100%;
+            height: 48px;
+
+            border: none;
+            border-radius: 8px;
+
+            background: #087747;
+            color: white;
+
+            font-size: 15px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .login-btn:hover {
+            background: #065d39;
+        }
+
+        .login-btn:disabled {
+
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        /* REGISTER */
+
+        .register {
+
+            text-align: center;
+
+            margin-top: 22px;
+
+            font-size: 13px;
+
+            color: #68736e;
+        }
+
+        .register a {
+
+            color: #087747;
+
+            text-decoration: none;
+
+            font-weight: 700;
+
+            margin-left: 4px;
+        }
+
+        /* MESSAGE */
+
+        #message {
+
+            margin-top: 18px;
+
+            padding: 12px;
+
+            border-radius: 8px;
+
+            display: none;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+        #message.success {
+
+            display: block;
+
+            background: #e5f7e9;
+
+            color: #176b3a;
+        }
+
+        #message.error {
+
+            display: block;
+
+            background: #ffe8e8;
+
+            color: #c62828;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 750px) {
+
+            body {
+                padding: 20px;
+            }
+
+            .login-container {
+
+                width: 100%;
+                max-width: 450px;
+
+                grid-template-columns: 1fr;
+            }
+
+            .login-image {
+                display: none;
+            }
+
+            .login-section {
+                padding: 35px 28px;
+            }
+
+            .login-form h2 {
+                text-align: center;
+            }
+
+            .subtitle {
+                text-align: center;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="login-container">
+
+
+    <!-- LEFT SIDE -->
+
+    <div class="login-image">
+
+        <div class="overlay">
+
+            <div class="brand">
+                🌾 KISAN SETU
+            </div>
+
+            <div class="image-content">
+
+                <h1>
+                    Smart Procurement.<br>
+                    Better Farming.
+                </h1>
+
+                <p>
+                    Book your procurement slot,
+                    track your queue and manage
+                    your procurement easily.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RIGHT SIDE -->
+
+    <div class="login-section">
+
+        <div class="login-form">
+
+
+            <h2>
+                Welcome Back!
+            </h2>
+
+            <p class="subtitle">
+                Login to manage your procurement
+            </p>
+
+
+            <!-- LOGIN FORM -->
+
+            <form id="loginForm">
+
+
+                <!-- MOBILE -->
+
+                <div class="input-group">
+
+                    <label for="mobile">
+                        Mobile Number
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="mobile"
+                        placeholder="Enter 10-digit mobile number"
+                        maxlength="10"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="input-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <div class="password-box">
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="Enter your password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            id="showPassword"
+                        >
+                            Show
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- LOGIN BUTTON -->
+
+                <button
+                    type="submit"
+                    class="login-btn"
+                    id="loginButton"
+                >
+                    Login →
+                </button>
+
+
+            </form>
+
+
+            <!-- MESSAGE -->
+
+            <div id="message"></div>
+
+
+            <!-- REGISTER -->
+
+            <div class="register">
+
+                Don't have an account?
+
+                <a href="register.html">
+                    Register as Farmer
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+
+    // ==========================================
+    // BACKEND URL
+    // ==========================================
+
+    const API =
+        "http://10.57.84.77:5000";
+
+
+    // ==========================================
+    // ELEMENTS
+    // ==========================================
+
+    const form =
+        document.getElementById(
+            "loginForm"
+        );
+
+
+    const mobile =
+        document.getElementById(
+            "mobile"
+        );
+
+
+    const password =
+        document.getElementById(
+            "password"
+        );
+
+
+    const loginButton =
+        document.getElementById(
+            "loginButton"
+        );
+
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    const showPassword =
+        document.getElementById(
+            "showPassword"
+        );
+
+
+    // ==========================================
+    // SHOW / HIDE PASSWORD
+    // ==========================================
+
+    showPassword.addEventListener(
+        "click",
+        function () {
+
+            if (
+                password.type === "password"
+            ) {
+
+                password.type = "text";
+
+                showPassword.textContent =
+                    "Hide";
+
+            } else {
+
+                password.type =
+                    "password";
+
+                showPassword.textContent =
+                    "Show";
+            }
+
+        }
+    );
+
+
+    // ==========================================
+    // ONLY NUMBERS IN MOBILE
+    // ==========================================
+
+    mobile.addEventListener(
+        "input",
+        function () {
+
+            mobile.value =
+                mobile.value.replace(
+                    /[^0-9]/g,
+                    ""
+                );
+
+        }
+    );
+
+
+    // ==========================================
+    // LOGIN
+    // ==========================================
+
+    form.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+
+            const mobileValue =
+                mobile.value.trim();
+
+
+            const passwordValue =
+                password.value.trim();
+
+
+            // ==============================
+            // VALIDATION
+            // ==============================
+
+            if (
+                !/^[0-9]{10}$/.test(
+                    mobileValue
+                )
+            ) {
+
+                showMessage(
+                    "Please enter a valid 10-digit mobile number.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (
+                passwordValue === ""
+            ) {
+
+                showMessage(
+                    "Please enter your password.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            // ==============================
+            // LOADING
+            // ==============================
+
+            loginButton.disabled =
+                true;
+
+            loginButton.textContent =
+                "Logging in...";
+
+
+            hideMessage();
+
+
+            try {
+
+
+                // ==========================
+                // CALL BACKEND
+                // ==========================
+
+                const response =
+                    await fetch(
+                        `${API}/api/login`,
+                        {
+
+                            method: "POST",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json"
+
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    mobile:
+                                        mobileValue,
+
+                                    password:
+                                        passwordValue
+
+                                })
+
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                // ==========================
+                // LOGIN FAILED
+                // ==========================
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.message ||
+                        "Invalid mobile number or password."
+                    );
+
+                }
+
+
+                // ==========================
+                // SAVE FARMER
+                // ==========================
+
+                localStorage.setItem(
+                    "farmer",
+                    JSON.stringify(
+                        data.farmer
+                    )
+                );
+
+
+                localStorage.setItem(
+                    "kisanSetuLoggedIn",
+                    "true"
+                );
+
+
+                // ==========================
+                // SUCCESS
+                // ==========================
+
+                showMessage(
+                    "✅ Login successful! Redirecting...",
+                    "success"
+                );
+
+
+                loginButton.textContent =
+                    "Login Successful ✓";
+
+
+                // ==========================
+                // DASHBOARD
+                // ==========================
+
+                setTimeout(
+                    function () {
+
+                        window.location.href =
+                            "dashboard.html";
+
+                    },
+                    700
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Login Error:",
+                    error
+                );
+
+
+                showMessage(
+
+                    "❌ " +
+                    (
+                        error.message ||
+                        "Unable to connect to server."
+                    ),
+
+                    "error"
+
+                );
+
+
+                loginButton.disabled =
+                    false;
+
+
+                loginButton.textContent =
+                    "Login →";
+
+            }
+
+        }
+    );
+
+
+    // ==========================================
+    // SHOW MESSAGE
+    // ==========================================
+
+    function showMessage(
+        text,
+        type
+    ) {
+
+        message.textContent =
+            text;
+
+        message.className =
+            type;
+
+    }
+
+
+    // ==========================================
+    // HIDE MESSAGE
+    // ==========================================
+
+    function hideMessage() {
+
+        message.textContent = "";
+
+        message.className = "";
+
+    }
+
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Kisan Setu | Register</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:30px 15px;
+
+    background:
+    linear-gradient(
+        rgba(238,248,239,0.78),
+        rgba(238,248,239,0.78)
+    ),
+    url("https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=900&q=80");
+
+    background-size:cover;
+    background-position:center;
+}
+
+.register-box{
+    width:100%;
+    max-width:720px;
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:35px 45px;
+
+    box-shadow:
+    0 10px 35px rgba(0,0,0,0.12);
+}
+
+.header{
+    text-align:center;
+    margin-bottom:28px;
+}
+
+.header h1{
+    font-size:30px;
+    color:#145c3a;
+    margin-bottom:8px;
+}
+
+.header p{
+    font-size:14px;
+    color:#5f6f64;
+}
+
+.form-group{
+    margin-bottom:18px;
+}
+
+.form-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+label{
+    display:block;
+    margin-bottom:7px;
+
+    font-size:14px;
+    font-weight:600;
+
+    color:#26352b;
+}
+
+input,
+select{
+
+    width:100%;
+    height:46px;
+
+    padding:0 13px;
+
+    font-size:14px;
+
+    color:#243229;
+
+    background:#f9fcfa;
+
+    border:1px solid #ccd9d0;
+
+    border-radius:8px;
+
+    outline:none;
+}
+
+input:focus,
+select:focus{
+
+    border-color:#218653;
+
+    box-shadow:
+    0 0 0 3px rgba(33,134,83,0.10);
+}
+
+.password-box{
+    position:relative;
+}
+
+.password-box input{
+    padding-right:60px;
+}
+
+.show-btn{
+
+    position:absolute;
+
+    right:12px;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    border:none;
+    background:transparent;
+
+    color:#218653;
+
+    font-size:13px;
+    font-weight:600;
+
+    cursor:pointer;
+}
+
+.terms{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    margin:5px 0 20px;
+}
+
+.terms input{
+
+    width:15px;
+    height:15px;
+
+    accent-color:#218653;
+}
+
+.terms label{
+
+    margin:0;
+
+    font-size:13px;
+
+    font-weight:normal;
+
+    color:#58665c;
+}
+
+.register-btn{
+
+    width:100%;
+    height:48px;
+
+    border:none;
+    border-radius:8px;
+
+    background:#218653;
+
+    color:white;
+
+    font-size:15px;
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+.register-btn:hover{
+    background:#176d42;
+}
+
+.register-btn:disabled{
+    background:#999;
+    cursor:not-allowed;
+}
+
+.login-link{
+
+    text-align:center;
+
+    margin-top:18px;
+
+    font-size:14px;
+
+    color:#68746b;
+}
+
+.login-link a{
+
+    color:#218653;
+
+    font-weight:bold;
+
+    text-decoration:none;
+}
+
+#message{
+
+    display:none;
+
+    margin-top:18px;
+
+    padding:12px;
+
+    border-radius:8px;
+
+    font-size:13px;
+}
+
+#message.success{
+
+    display:block;
+
+    background:#e5f7e9;
+
+    color:#176b42;
+}
+
+#message.error{
+
+    display:block;
+
+    background:#ffe8e8;
+
+    color:#c62828;
+}
+
+@media(max-width:650px){
+
+    .register-box{
+        padding:28px 20px;
+    }
+
+    .form-row{
+        grid-template-columns:1fr;
+        gap:0;
+    }
+
+    .header h1{
+        font-size:25px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="register-box">
+
+
+    <div class="header">
+
+        <h1>
+            🌾 Create your account
+        </h1>
+
+        <p>
+            Register as a farmer to start managing your procurement
+        </p>
+
+    </div>
+
+
+    <form id="registerForm">
+
+
+        <!-- NAME -->
+
+        <div class="form-group">
+
+            <label>
+                Full Name
+            </label>
+
+            <input
+                type="text"
+                id="fullName"
+                placeholder="Enter your full name"
+                required
+            >
+
+        </div>
+
+
+        <!-- MOBILE + PINCODE -->
+
+        <div class="form-row">
+
+
+            <div class="form-group">
+
+                <label>
+                    Mobile Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="mobile"
+                    maxlength="10"
+                    placeholder="Enter 10-digit mobile number"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Pincode
+                </label>
+
+                <input
+                    type="text"
+                    id="pincode"
+                    maxlength="6"
+                    placeholder="Enter 6-digit pincode"
+                    required
+                >
+
+            </div>
+
+
+        </div>
+
+
+        <!-- STATE + CROP -->
+
+        <div class="form-row">
+
+
+            <div class="form-group">
+
+                <label>
+                    State
+                </label>
+
+                <select id="state" required>
+
+                    <option value="">
+                        Select your state
+                    </option>
+
+                    <option>
+                        Madhya Pradesh
+                    </option>
+
+                    <option>
+                        Gujarat
+                    </option>
+
+                    <option>
+                        Rajasthan
+                    </option>
+
+                    <option>
+                        Maharashtra
+                    </option>
+
+                    <option>
+                        Uttar Pradesh
+                    </option>
+
+                    <option>
+                        Punjab
+                    </option>
+
+                    <option>
+                        Haryana
+                    </option>
+
+                    <option>
+                        Bihar
+                    </option>
+
+                    <option>
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Primary Crop
+                </label>
+
+                <input
+                    type="text"
+                    id="crop"
+                    placeholder="e.g. Wheat"
+                    required
+                >
+
+            </div>
+
+
+        </div>
+
+
+        <!-- PASSWORD -->
+
+        <div class="form-group">
+
+            <label>
+                Password
+            </label>
+
+            <div class="password-box">
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Create password"
+                    required
+                >
+
+                <button
+                    type="button"
+                    class="show-btn"
+                    onclick="togglePassword('password',this)"
+                >
+                    Show
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- CONFIRM PASSWORD -->
+
+        <div class="form-group">
+
+            <label>
+                Confirm Password
+            </label>
+
+            <div class="password-box">
+
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="Re-enter password"
+                    required
+                >
+
+                <button
+                    type="button"
+                    class="show-btn"
+                    onclick="togglePassword('confirmPassword',this)"
+                >
+                    Show
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- TERMS -->
+
+        <div class="terms">
+
+            <input
+                type="checkbox"
+                id="terms"
+                required
+            >
+
+            <label for="terms">
+
+                I agree to the Kisan Setu terms.
+
+            </label>
+
+        </div>
+
+
+        <!-- REGISTER -->
+
+        <button
+            type="submit"
+            class="register-btn"
+            id="registerButton"
+        >
+
+            Register as Farmer
+
+        </button>
+
+
+    </form>
+
+
+    <!-- MESSAGE -->
+
+    <div id="message"></div>
+
+
+    <!-- LOGIN -->
+
+    <div class="login-link">
+
+        Already have an account?
+
+        <a href="login.html">
+            Login
+        </a>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+// ============================================
+// BACKEND URL
+// ============================================
+
+const API =
+    "http://10.57.84.77:5000";
+
+
+// ============================================
+// PASSWORD SHOW/HIDE
+// ============================================
+
+function togglePassword(id,button){
+
+    const input =
+        document.getElementById(id);
+
+    if(input.type === "password"){
+
+        input.type = "text";
+
+        button.textContent = "Hide";
+
+    }
+    else{
+
+        input.type = "password";
+
+        button.textContent = "Show";
+
+    }
+
+}
+
+
+// ============================================
+// ONLY NUMBERS MOBILE
+// ============================================
+
+document
+.getElementById("mobile")
+.addEventListener(
+    "input",
+    function(){
+
+        this.value =
+            this.value.replace(
+                /\D/g,
+                ""
+            );
+
+    }
+);
+
+
+// ============================================
+// ONLY NUMBERS PINCODE
+// ============================================
+
+document
+.getElementById("pincode")
+.addEventListener(
+    "input",
+    function(){
+
+        this.value =
+            this.value.replace(
+                /\D/g,
+                ""
+            );
+
+    }
+);
+
+
+// ============================================
+// REGISTER
+// ============================================
+
+document
+.getElementById("registerForm")
+.addEventListener(
+    "submit",
+    async function(event){
+
+        event.preventDefault();
+
+
+        // GET VALUES
+
+        const name =
+            document
+            .getElementById("fullName")
+            .value
+            .trim();
+
+
+        const mobile =
+            document
+            .getElementById("mobile")
+            .value
+            .trim();
+
+
+        const pincode =
+            document
+            .getElementById("pincode")
+            .value
+            .trim();
+
+
+        const state =
+            document
+            .getElementById("state")
+            .value;
+
+
+        const crop =
+            document
+            .getElementById("crop")
+            .value
+            .trim();
+
+
+        const password =
+            document
+            .getElementById("password")
+            .value;
+
+
+        const confirmPassword =
+            document
+            .getElementById("confirmPassword")
+            .value;
+
+
+        const button =
+            document
+            .getElementById("registerButton");
+
+
+        // ====================================
+        // VALIDATION
+        // ====================================
+
+        if(name.length < 2){
+
+            showMessage(
+                "Please enter your full name.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if(!/^[0-9]{10}$/.test(mobile)){
+
+            showMessage(
+                "Please enter a valid 10-digit mobile number.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if(!/^[0-9]{6}$/.test(pincode)){
+
+            showMessage(
+                "Please enter a valid 6-digit pincode.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if(password.length < 6){
+
+            showMessage(
+                "Password must contain at least 6 characters.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if(password !== confirmPassword){
+
+            showMessage(
+                "Passwords do not match.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        // ====================================
+        // LOADING
+        // ====================================
+
+        button.disabled = true;
+
+        button.textContent =
+            "Creating account...";
+
+        hideMessage();
+
+
+        try{
+
+
+            // =================================
+            // SEND DATA TO BACKEND
+            // =================================
+
+            const response =
+                await fetch(
+                    `${API}/api/register`,
+                    {
+
+                        method:"POST",
+
+                        headers:{
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                        JSON.stringify({
+
+                            name:name,
+
+                            mobile:mobile,
+
+                            password:password
+
+                        })
+
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            // =================================
+            // ERROR
+            // =================================
+
+            if(!response.ok){
+
+                throw new Error(
+                    data.message ||
+                    "Registration failed."
+                );
+
+            }
+
+
+            // =================================
+            // SUCCESS
+            // =================================
+
+            showMessage(
+                "✅ Registration successful! Redirecting to login...",
+                "success"
+            );
+
+
+            button.textContent =
+                "Account Created ✓";
+
+
+            // =================================
+            // REDIRECT
+            // =================================
+
+            setTimeout(
+                function(){
+
+                    window.location.href =
+                        "login.html";
+
+                },
+                1200
+            );
+
+
+        }
+        catch(error){
+
+            console.error(
+                "Registration Error:",
+                error
+            );
+
+
+            showMessage(
+                "❌ " +
+                (
+                    error.message ||
+                    "Unable to connect to server."
+                ),
+                "error"
+            );
+
+
+            button.disabled = false;
+
+            button.textContent =
+                "Register as Farmer";
+
+        }
+
+    }
+);
+
+
+// ============================================
+// SHOW MESSAGE
+// ============================================
+
+function showMessage(text,type){
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+    message.textContent =
+        text;
+
+    message.className =
+        type;
+
+}
+
+
+// ============================================
+// HIDE MESSAGE
+// ============================================
+
+function hideMessage(){
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+    message.textContent = "";
+
+    message.className = "";
+
+}
+
+</script>
+
+
+</body>
+
+</html>

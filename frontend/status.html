@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Kisan Setu - Procurement Status</title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+
+        body {
+            background: #f4f8f3;
+            color: #173b27;
+        }
+
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        nav {
+            background: #176b3a;
+            color: white;
+
+            padding: 16px 6%;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+
+        .back-btn {
+            background: white;
+            color: #176b3a;
+
+            border: none;
+
+            padding: 9px 16px;
+
+            border-radius: 8px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        .back-btn:hover {
+            background: #eeeeee;
+        }
+
+
+        /* =========================
+           MAIN CONTAINER
+        ========================= */
+
+        .container {
+            width: 92%;
+            max-width: 1000px;
+
+            margin: 35px auto;
+        }
+
+
+        .header {
+            text-align: center;
+
+            margin-bottom: 30px;
+        }
+
+
+        .header h1 {
+            font-size: 32px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .header p {
+            color: #667;
+        }
+
+
+        /* =========================
+           GRID
+        ========================= */
+
+        .grid {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 20px;
+        }
+
+
+        /* =========================
+           CARD
+        ========================= */
+
+        .card {
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, 0.07);
+        }
+
+
+        .card h2 {
+            color: #176b3a;
+
+            margin-bottom: 20px;
+        }
+
+
+        /* =========================
+           TOKEN
+        ========================= */
+
+        .token {
+            font-size: 42px;
+
+            font-weight: bold;
+
+            color: #176b3a;
+
+            text-align: center;
+
+            margin: 10px 0 25px;
+        }
+
+
+        /* =========================
+           AMOUNT
+        ========================= */
+
+        .amount {
+            font-size: 38px;
+
+            font-weight: bold;
+
+            color: #176b3a;
+
+            text-align: center;
+
+            margin: 15px 0 25px;
+        }
+
+
+        /* =========================
+           ROW
+        ========================= */
+
+        .row {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 14px 0;
+
+            border-bottom: 1px solid #eeeeee;
+        }
+
+
+        .label {
+            color: #666;
+        }
+
+
+        .value {
+            font-weight: bold;
+
+            text-align: right;
+
+            word-break: break-word;
+        }
+
+
+        /* =========================
+           STATUS BADGES
+        ========================= */
+
+        .badge {
+            display: inline-block;
+
+            padding: 7px 14px;
+
+            border-radius: 20px;
+
+            font-size: 14px;
+
+            font-weight: bold;
+        }
+
+
+        .completed {
+            background: #e5f6e9;
+
+            color: #176b3a;
+        }
+
+
+        .pending {
+            background: #fff3d6;
+
+            color: #9a6700;
+        }
+
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        .message {
+            background: white;
+
+            text-align: center;
+
+            padding: 40px;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, 0.07);
+        }
+
+
+        .message-icon {
+            font-size: 50px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .message h2 {
+            margin-bottom: 8px;
+        }
+
+
+        .message p {
+            color: #666;
+        }
+
+
+        /* =========================
+           REFRESH BUTTON
+        ========================= */
+
+        .refresh-btn {
+            width: 100%;
+
+            margin-top: 25px;
+
+            padding: 14px;
+
+            background: #176b3a;
+
+            color: white;
+
+            border: none;
+
+            border-radius: 10px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        .refresh-btn:hover {
+            background: #12552f;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .header h1 {
+                font-size: 26px;
+            }
+
+
+            .logo {
+                font-size: 20px;
+            }
+
+
+            .row {
+                flex-direction: column;
+
+                gap: 5px;
+            }
+
+
+            .value {
+                text-align: left;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+
+    <nav>
+
+        <div class="logo">
+            🌾 Kisan Setu
+        </div>
+
+
+        <button
+            class="back-btn"
+            onclick="goDashboard()"
+        >
+
+            ← Dashboard
+
+        </button>
+
+    </nav>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================= -->
+
+    <div class="container">
+
+
+        <div class="header">
+
+            <h1>
+                📦 Procurement & Payment
+            </h1>
+
+            <p>
+                Track your procurement and payment status.
+            </p>
+
+        </div>
+
+
+
+        <div id="statusContainer">
+
+            <div class="message">
+
+                <div class="message-icon">
+                    ⏳
+                </div>
+
+                <h2>
+                    Loading Status...
+                </h2>
+
+                <p>
+                    Please wait...
+                </p>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+<script>
+
+
+// ==================================================
+// GET LOGGED-IN FARMER
+// ==================================================
+
+const farmer =
+    JSON.parse(
+        localStorage.getItem("farmer")
+    );
+
+
+// ==================================================
+// CHECK LOGIN
+// ==================================================
+
+if (!farmer) {
+
+    alert("Please login first.");
+
+    window.location.href =
+        "login.html";
+
+}
+
+
+// ==================================================
+// FARMER ID
+// ==================================================
+
+const farmerId =
+    Number(farmer.id);
+
+
+// Debug information
+
+console.log(
+    "Logged-in farmer:",
+    farmer
+);
+
+console.log(
+    "Farmer ID:",
+    farmerId
+);
+
+
+// ==================================================
+// LOAD STATUS
+// ==================================================
+
+async function loadStatus() {
+
+    const container =
+        document.getElementById(
+            "statusContainer"
+        );
+
+
+    try {
+
+        // ------------------------------------------
+        // API REQUEST
+        // ------------------------------------------
+
+        const response =
+            await fetch(
+                `/api/status/${farmerId}`
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Status API response:",
+            data
+        );
+
+
+        // ------------------------------------------
+        // NO BOOKING
+        // ------------------------------------------
+
+        if (!response.ok) {
+
+            container.innerHTML = `
+
+                <div class="message">
+
+                    <div class="message-icon">
+                        📦
+                    </div>
+
+
+                    <h2>
+                        No Procurement Record
+                    </h2>
+
+
+                    <p>
+                        ${
+                            data.message ||
+                            "No booking found"
+                        }
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        // ==================================================
+        // STATUS DATA
+        // ==================================================
+
+        const procurementStatus =
+            data.procurement_status ||
+            "Pending";
+
+
+        const paymentStatus =
+            data.payment_status ||
+            "Pending";
+
+
+        const totalAmount =
+            Number(
+                data.total_amount || 0
+            );
+
+
+        const paymentAmount =
+            Number(
+                data.payment_amount ||
+                totalAmount
+            );
+
+
+        // ==================================================
+        // PROCUREMENT + PAYMENT UI
+        // ==================================================
+
+        container.innerHTML = `
+
+            <div class="grid">
+
+
+                <!-- ====================================
+                     PROCUREMENT CARD
+                ===================================== -->
+
+                <div class="card">
+
+                    <h2>
+                        📦 Procurement Details
+                    </h2>
+
+
+                    <div class="token">
+
+                        ${
+                            data.token_number ||
+                            "--"
+                        }
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <span class="label">
+                            Booking ID
+                        </span>
+
+                        <span class="value">
+
+                            ${
+                                data.booking_id ||
+                                "--"
+                            }
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <span class="label">
+                            Centre
+                        </span>
+
+                        <span class="value">
+
+                            ${
+                                data.centre_name ||
+                                "--"
+                            }
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <span class="label">
+                            Crop
+                        </span>
+
+                        <span class="value">
+
+                            ${
+                                data.crop_name ||
+                                "--"
+                            }
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <span class="label">
+                            Quantity
+                        </span>
+
+                        <span class="value">
+
+                            ${
+                                data.quantity ??
+                                "--"
+                            }
+                            kg
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <span class="label">
+                            Rate
+                        </span>
+
+                        <span class="value">
+
+                            ₹${
+                                data.rate ??
+                                "--"
+                            }
+                            / kg
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <span class="label">
+                            Total Amount
+                        </span>
+
+                        <span class="value">
+
+                            ₹${totalAmount.toFixed(2)}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <span class="label">
+                            Procurement Status
+                        </span>
+
+                        <span class="value">
+
+                            <span
+                                class="badge ${
+                                    procurementStatus
+                                        .toLowerCase()
+                                        === "completed"
+                                        ? "completed"
+                                        : "pending"
+                                }"
+                            >
+
+                                ${procurementStatus}
+
+                            </span>
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ====================================
+                     PAYMENT CARD
+                ===================================== -->
+
+                <div class="card">
+
+                    <h2>
+                        💰 Payment Details
+                    </h2>
+
+
+                    <div class="amount">
+
+                        ₹${paymentAmount.toFixed(2)}
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <span class="label">
+                            Payment Status
+                        </span>
+
+                        <span class="value">
+
+                            <span
+                                class="badge ${
+                                    paymentStatus
+                                        .toLowerCase()
+                                        === "completed"
+                                        ? "completed"
+                                        : "pending"
+                                }"
+                            >
+
+                                ${paymentStatus}
+
+                            </span>
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <span class="label">
+                            Payment Method
+                        </span>
+
+                        <span class="value">
+
+                            ${
+                                data.payment_method ||
+                                "--"
+                            }
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <span class="label">
+                            Transaction ID
+                        </span>
+
+                        <span class="value">
+
+                            ${
+                                data.transaction_id ||
+                                "--"
+                            }
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <span class="label">
+                            Payment Date
+                        </span>
+
+                        <span class="value">
+
+                            ${
+                                formatDate(
+                                    data.paid_at
+                                )
+                            }
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ====================================
+                 REFRESH
+            ===================================== -->
+
+            <button
+                class="refresh-btn"
+                onclick="loadStatus()"
+            >
+
+                🔄 Refresh Status
+
+            </button>
+
+        `;
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Status error:",
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <div class="message">
+
+                <div class="message-icon">
+                    ⚠️
+                </div>
+
+
+                <h2>
+                    Unable to Load Status
+                </h2>
+
+
+                <p>
+                    Please make sure the backend server is running.
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+// ==================================================
+// FORMAT DATE
+// ==================================================
+
+function formatDate(date) {
+
+    if (!date) {
+
+        return "--";
+
+    }
+
+
+    const d =
+        new Date(date);
+
+
+    if (
+        isNaN(
+            d.getTime()
+        )
+    ) {
+
+        return "--";
+
+    }
+
+
+    return d.toLocaleString(
+        "en-IN",
+        {
+            day: "2-digit",
+
+            month: "short",
+
+            year: "numeric",
+
+            hour: "2-digit",
+
+            minute: "2-digit"
+        }
+    );
+
+}
+
+
+// ==================================================
+// GO TO DASHBOARD
+// ==================================================
+
+function goDashboard() {
+
+    window.location.href =
+        "dashboard.html";
+
+}
+
+
+// ==================================================
+// START
+// ==================================================
+
+loadStatus();
+
+
+</script>
+
+
+</body>
+
+</html>
