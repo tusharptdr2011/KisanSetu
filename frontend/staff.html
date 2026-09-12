@@ -779,10 +779,9 @@ async function loadQueue() {
 
     try {
 
-        const response =
-            await fetch(
-                `/api/staff/queue/${centreId}`
-            );
+        await fetch(
+          `https://talented-smile-production-e2fa.up.railway.app/api/staff/queue/${centreId}`
+        );
 
 
         const data =
@@ -1164,7 +1163,7 @@ async function completeProcurement() {
 
         const response =
             await fetch(
-                "/api/procurement",
+                "https://talented-smile-production-e2fa.up.railway.app/api/procurement",
                 {
 
                     method:
@@ -1327,7 +1326,7 @@ async function completePayment() {
 
         const response =
             await fetch(
-                "/api/payments",
+                "https://talented-smile-production-e2fa.up.railway.app/api/payments",
                 {
 
                     method:
