@@ -493,6 +493,102 @@
 
 
         /* ================================
+           STATE → PROCUREMENT CENTRE
+        ================================= */
+        .location-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .location-field-wide {
+            grid-column: 1 / -1;
+        }
+
+        .location-field label {
+            display: block;
+            margin-bottom: 7px;
+            color: var(--green-900);
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .location-select {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #cdded2;
+            border-radius: 12px;
+            outline: none;
+            background: #fbfefc;
+            color: var(--ink);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .2s ease;
+        }
+
+        .location-select:focus {
+            border-color: var(--green-600);
+            box-shadow: 0 0 0 3px rgba(33,131,74,.10);
+        }
+
+        .location-select:disabled {
+            background: #f1f5f2;
+            color: #8a9890;
+            cursor: not-allowed;
+        }
+
+        .centre-summary {
+            padding: 14px 16px;
+            border-radius: 13px;
+            background: linear-gradient(135deg, #eff9f2, #f7fbf8);
+            border: 1px solid rgba(23,107,58,.12);
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.55;
+        }
+
+        .centre-summary.selected {
+            color: var(--green-900);
+            font-weight: 700;
+        }
+
+        .dashboard-book-btn {
+            width: 100%;
+            margin-top: 14px;
+            border: none;
+            border-radius: 12px;
+            padding: 13px 18px;
+            background: linear-gradient(135deg, var(--green-700), var(--green-600));
+            color: #fff;
+            font-size: 15px;
+            font-weight: 850;
+            cursor: pointer;
+            transition: .2s ease;
+        }
+
+        .dashboard-book-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 9px 20px rgba(23,107,58,.22);
+        }
+
+        .dashboard-book-btn:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+        }
+
+        @media(max-width: 600px) {
+            .location-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .location-field-wide {
+                grid-column: auto;
+            }
+        }
+
+        /* ================================
            LANGUAGE SELECTOR
         ================================= */
         .language-select {
@@ -621,21 +717,44 @@
         </div>
 
 
-        <!-- PROCUREMENT CENTRES -->
+        <!-- PROCUREMENT LOCATION -->
         <div class="section">
 
             <h2 data-i18n="procurementCentres">
-                📍 Procurement Centres
+                📍 Procurement Centre
             </h2>
 
-            <div
-                class="centre-grid"
-                id="centresContainer"
-            >
-                <p class="loading">
-                    Loading centres...
-                </p>
+            <div class="location-grid">
+
+                <div class="location-field">
+                    <label for="stateSelect" data-i18n="stateLabel">State</label>
+                    <select id="stateSelect" class="location-select">
+                        <option value="" data-i18n="selectState">Select State</option>
+                    </select>
+                </div>
+
+                <div class="location-field location-field-wide">
+                    <label for="centreSelect" data-i18n="centreLabel">Procurement Centre</label>
+                    <select id="centreSelect" class="location-select" disabled>
+                        <option value="" data-i18n="selectCentre">Select Procurement Centre</option>
+                    </select>
+                </div>
+
             </div>
+
+            <div id="centreSummary" class="centre-summary">
+                <span data-i18n="selectLocationHint">Select state, mandi and procurement centre to book a slot.</span>
+            </div>
+
+            <button
+                id="dashboardBookBtn"
+                class="dashboard-book-btn"
+                type="button"
+                disabled
+                onclick="bookSelectedCentre()"
+            >
+                <span data-i18n="bookSlot">🎟️ Book Slot</span>
+            </button>
 
         </div>
 
@@ -805,7 +924,12 @@
             ton: "Ton",
             saveCrop: "Save Crop",
             addCrop: "Add Crop",
-            bookSlot: "Book Slot"
+            bookSlot: "Book Slot",
+            stateLabel: "State",
+            selectState: "Select State",
+            centreLabel: "Procurement Centre",
+            selectCentre: "Select Procurement Centre",
+            selectLocationHint: "Select state and procurement centre to book a slot."
         },
         hi: {
             logout: "लॉग आउट",
@@ -832,7 +956,12 @@
             ton: "टन",
             saveCrop: "फसल सहेजें",
             addCrop: "फसल जोड़ें",
-            bookSlot: "स्लॉट बुक करें"
+            bookSlot: "स्लॉट बुक करें",
+            stateLabel: "राज्य",
+            selectState: "राज्य चुनें",
+            centreLabel: "खरीद केंद्र",
+            selectCentre: "खरीद केंद्र चुनें",
+            selectLocationHint: "स्लॉट बुक करने के लिए राज्य और खरीद केंद्र चुनें।"
         },
         gu: {
             logout: "લૉગ આઉટ",
@@ -859,7 +988,12 @@
             ton: "ટન",
             saveCrop: "પાક સાચવો",
             addCrop: "પાક ઉમેરો",
-            bookSlot: "સ્લોટ બુક કરો"
+            bookSlot: "સ્લોટ બુક કરો",
+            stateLabel: "રાજ્ય",
+            selectState: "રાજ્ય પસંદ કરો",
+            centreLabel: "ખરીદી કેન્દ્ર",
+            selectCentre: "ખરીદી કેન્દ્ર પસંદ કરો",
+            selectLocationHint: "સ્લોટ બુક કરવા માટે રાજ્ય અને ખરીદી કેન્દ્ર પસંદ કરો."
         }
     };
 
@@ -1328,73 +1462,151 @@
 
 
     // =====================================
-    // LOAD CENTRES
+    // STATE → PROCUREMENT CENTRE
     // =====================================
 
+    let allCentres = [];
+    let selectedCentreId = null;
+
+    function resetCentreSelect(disabled = true) {
+        const select = document.getElementById("centreSelect");
+        const lang = window.kisanSetuLanguage || "en";
+        select.innerHTML =
+            `<option value="" data-i18n="selectCentre">${translations[lang].selectCentre}</option>`;
+        select.value = "";
+        select.disabled = disabled;
+    }
+
     async function loadCentres() {
+        const stateSelect = document.getElementById("stateSelect");
 
         try {
+            const response = await fetch(`${API}/api/centres`);
 
-            const response = await fetch(
-                `${API}/api/centres`
-            );
+            if (!response.ok) {
+                throw new Error("Failed to load procurement centres");
+            }
 
-            const centres = await response.json();
+            allCentres = await response.json();
 
-            const container =
-                document.getElementById("centresContainer");
+            const states = [...new Set(
+                allCentres
+                    .map(c => String(c.state || "").trim())
+                    .filter(Boolean)
+            )].sort((a, b) => a.localeCompare(b));
 
-            container.innerHTML = "";
+            stateSelect.innerHTML =
+                `<option value="" data-i18n="selectState"></option>`;
 
-
-            centres.forEach(centre => {
-
-                const div =
-                    document.createElement("div");
-
-                div.className = "centre";
-
-
-                div.innerHTML = `
-
-                    <h3>
-                        ${centre.name}
-                    </h3>
-
-                    <p>
-                        📍 ${centre.location}
-                    </p>
-
-                    <p>
-                        Capacity: ${centre.capacity}
-                    </p>
-
-                    <button
-                        onclick="bookSlot(${centre.id})"
-                    >
-                        <span data-i18n="bookSlot">Book Slot</span>
-                    </button>
-
-                `;
-
-
-                container.appendChild(div);
-
+            states.forEach(state => {
+                const option = document.createElement("option");
+                option.value = state;
+                option.textContent = state;
+                stateSelect.appendChild(option);
             });
 
             applyLanguage(localStorage.getItem("kisanSetuLanguage") || "en");
 
         } catch (error) {
-
             console.log("Centre error:", error);
-
-            document.getElementById("centresContainer").innerHTML =
-                "<p>Unable to load centres.</p>";
-
+            stateSelect.innerHTML =
+                `<option value="">Unable to load states</option>`;
+            stateSelect.disabled = true;
         }
-
     }
 
+    function loadCentresForState() {
+        const state = document.getElementById("stateSelect").value;
+        const centreSelect = document.getElementById("centreSelect");
+
+        selectedCentreId = null;
+        resetCentreSelect(true);
+
+        document.getElementById("dashboardBookBtn").disabled = true;
+
+        const summary = document.getElementById("centreSummary");
+        summary.className = "centre-summary";
+        summary.innerHTML =
+            `<span data-i18n="selectLocationHint">${translations[window.kisanSetuLanguage || "en"].selectLocationHint}</span>`;
+
+        if (!state) return;
+
+        const centres = allCentres
+            .filter(c => String(c.state || "").trim() === state)
+            .sort((a, b) => String(a.name).localeCompare(String(b.name)));
+
+        centreSelect.innerHTML =
+            `<option value="" data-i18n="selectCentre"></option>`;
+
+        centres.forEach(centre => {
+            const option = document.createElement("option");
+            option.value = centre.id;
+            option.textContent = centre.name;
+            option.dataset.location = centre.location || "";
+            option.dataset.capacity = centre.capacity || "";
+            centreSelect.appendChild(option);
+        });
+
+        centreSelect.disabled = centres.length === 0;
+
+        if (centres.length === 0) {
+            summary.textContent = "No procurement centres found for this state.";
+        }
+
+        applyLanguage(localStorage.getItem("kisanSetuLanguage") || "en");
+    }
+
+    function selectDashboardCentre() {
+        const centreSelect = document.getElementById("centreSelect");
+
+        selectedCentreId = centreSelect.value
+            ? Number(centreSelect.value)
+            : null;
+
+        document.getElementById("dashboardBookBtn").disabled =
+            !selectedCentreId;
+
+        const summary = document.getElementById("centreSummary");
+
+        if (!selectedCentreId) {
+            summary.className = "centre-summary";
+            summary.innerHTML =
+                `<span data-i18n="selectLocationHint">${translations[window.kisanSetuLanguage || "en"].selectLocationHint}</span>`;
+            return;
+        }
+
+        const state = document.getElementById("stateSelect").value;
+        const option = centreSelect.options[centreSelect.selectedIndex];
+
+        const location = option.dataset.location || "";
+        const capacity = option.dataset.capacity || "";
+
+        summary.className = "centre-summary selected";
+        summary.innerHTML = `
+            📍 ${state}
+            <br>
+            🏢 ${option.textContent}
+            ${location ? `<br>📌 ${location}` : ""}
+            ${capacity ? `<br>👥 Capacity: ${capacity}` : ""}
+        `;
+    }
+
+    function bookSelectedCentre() {
+        if (!selectedCentreId) return;
+
+        localStorage.setItem(
+            "selectedCentre",
+            String(selectedCentreId)
+        );
+
+        window.location.href = "book-slot.html";
+    }
+
+    document.getElementById("stateSelect")
+        .addEventListener("change", loadCentresForState);
+
+    document.getElementById("centreSelect")
+        .addEventListener("change", selectDashboardCentre);
 
     // =====================================
     // LOAD QUEUE
@@ -1611,23 +1823,6 @@
 
 
     // =====================================
-    // BOOK SLOT
-    // =====================================
-
-    function bookSlot(centreId) {
-
-        localStorage.setItem(
-            "selectedCentre",
-            centreId
-        );
-
-        window.location.href =
-            "book-slot.html";
-
-    }
-
-
-    // =====================================
     // LOGOUT
     // =====================================
 
@@ -1657,8 +1852,6 @@
     // =====================================
 
     loadCrops();
-
-    loadCentres();
 
     loadQueue();
 
