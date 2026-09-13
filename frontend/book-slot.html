@@ -171,6 +171,19 @@
             border-color: #168149;
         }
 
+        .readonly-field {
+            width: 100%;
+            padding: 14px 15px;
+            border: 2px solid #e0e8e1;
+            border-radius: 12px;
+            background: #f4f8f5;
+            color: #173f2a;
+            font-size: 16px;
+            outline: none;
+            cursor: not-allowed;
+            font-weight: 600;
+        }
+
         .crop-info {
             margin-top: 15px;
             padding: 14px 16px;
@@ -441,6 +454,38 @@
 
                 </div>
 
+                <div class="crop-field">
+
+                    <label for="quantityDisplay">
+                        Quantity
+                    </label>
+
+                    <input
+                        id="quantityDisplay"
+                        type="text"
+                        value="--"
+                        readonly
+                        class="readonly-field"
+                    >
+
+                </div>
+
+                <div class="crop-field">
+
+                    <label for="unitDisplay">
+                        Unit
+                    </label>
+
+                    <input
+                        id="unitDisplay"
+                        type="text"
+                        value="--"
+                        readonly
+                        class="readonly-field"
+                    >
+
+                </div>
+
             </div>
 
             <div id="cropInfo" class="crop-info"></div>
@@ -708,6 +753,9 @@
         cropInfo.style.display =
             "none";
 
+        document.getElementById("quantityDisplay").value = "--";
+        document.getElementById("unitDisplay").value = "--";
+
         if (!selectedCropId) {
             updateBookButton();
             return;
@@ -762,8 +810,16 @@
             }
         );
 
+        const quantity = Number(crop.quantity);
+        const unit = crop.unit || "kg";
+
+        document.getElementById("quantityDisplay").value =
+            Number.isFinite(quantity) ? quantity.toFixed(2) : "--";
+
+        document.getElementById("unitDisplay").value = unit;
+
         cropInfo.innerHTML =
-            `<strong>${crop.crop_name}</strong> · ${Number(crop.quantity).toFixed(2)} ${crop.unit || "kg"}`;
+            `<strong>${crop.crop_name}</strong> · ${Number.isFinite(quantity) ? quantity.toFixed(2) : "--"} ${unit}`;
 
         cropInfo.style.display =
             "block";
