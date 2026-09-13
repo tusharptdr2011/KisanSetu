@@ -987,16 +987,62 @@
                 `${API}/api/crops/${farmerId}`
             );
 
+            if (!response.ok) {
+                throw new Error("Failed to load crops");
+            }
+
             const crops = await response.json();
 
+            // Check the farmer's latest booking.
+            // If a booking is still active/waiting, show the crop
+            // selected for that booking.
+            // Once procurement is completed, show the next crop
+            // that still has quantity available.
+            let activeCrop = null;
 
-            if (crops.length > 0) {
+            try {
+                const statusResponse = await fetch(
+                    `${API}/api/status/${farmerId}`
+                );
+
+                if (statusResponse.ok) {
+                    const status = await statusResponse.json();
+
+                    const bookingIsActive =
+                        status.booking_status &&
+                        status.booking_status !== "completed";
+
+                    if (bookingIsActive && status.crop_id) {
+                        activeCrop = crops.find(
+                            crop => Number(crop.id) === Number(status.crop_id)
+                        ) || {
+                            crop_name: status.crop_name,
+                            quantity: status.remaining_quantity ?? 0,
+                            unit: status.unit || "kg"
+                        };
+                    }
+                }
+            } catch (statusError) {
+                console.log("Booking status unavailable:", statusError);
+            }
+
+            // No active booking? Show the first crop that still has
+            // quantity available. Crops with 0 quantity are normally
+            // filtered by the backend already.
+            if (!activeCrop) {
+                activeCrop = crops.find(
+                    crop => Number(crop.quantity) > 0
+                ) || null;
+            }
+
+            if (activeCrop) {
 
                 document.getElementById("cropName").textContent =
-                    crops[0].crop_name;
+                    activeCrop.crop_name;
 
                 document.getElementById("cropQuantity").textContent =
-                    crops[0].quantity + " " + crops[0].unit;
+                    Number(activeCrop.quantity).toFixed(2) + " " +
+                    (activeCrop.unit || "kg");
 
                 document.getElementById("addCropBtn").style.display =
                     "none";
@@ -1011,7 +1057,6 @@
 
                 document.getElementById("addCropBtn").style.display =
                     "inline-block";
-
             }
 
         } catch (error) {
@@ -1026,10 +1071,9 @@
 
             document.getElementById("addCropBtn").style.display =
                 "inline-block";
-
         }
-
     }
+
 
 
     // =====================================
@@ -1362,4 +1406,4 @@
 
 </body>
 
-</html> 
+</html>
