@@ -326,6 +326,13 @@ app.get("/api/slots", (req, res) => {
    - ADD TO QUEUE
 ===================================================== */
 
+/* =====================================================
+   BOOK SLOT
+   - CUSTOMIZABLE QUANTITY
+   - GENERATE TOKEN
+   - ADD TO QUEUE
+===================================================== */
+
 app.post("/api/bookings", (req, res) => {
     const {
         farmer_id,
@@ -362,455 +369,522 @@ app.post("/api/bookings", (req, res) => {
         });
     }
 
-    db.beginTransaction((transactionError) => {
-        if (transactionError) {
+    db.getConnection((connectionError, connection) => {
+
+        if (connectionError) {
             return res.status(500).json({
-                message: "Could not start booking",
-                error: transactionError.message
+                message: "Could not get database connection",
+                error: connectionError.message
             });
         }
 
-        /* CHECK SLOT */
+        connection.beginTransaction((transactionError) => {
 
-        const slotSql = `
-            SELECT *
-            FROM slots
-            WHERE id = ?
-            FOR UPDATE
-        `;
+            if (transactionError) {
+                connection.release();
 
-        db.query(slotSql, [slot_id], (err, slotResults) => {
-            if (err) {
-                return db.rollback(() => {
-                    res.status(500).json({
-                        message: "Failed to check slot",
-                        error: err.message
-                    });
+                return res.status(500).json({
+                    message: "Could not start booking",
+                    error: transactionError.message
                 });
             }
 
-            if (slotResults.length === 0) {
-                return db.rollback(() => {
-                    res.status(404).json({
-                        message: "Slot not found"
-                    });
-                });
-            }
+            /* CHECK SLOT */
 
-            const slot = slotResults[0];
-
-            if (
-                Number(slot.centre_id) !==
-                Number(centre_id)
-            ) {
-                return db.rollback(() => {
-                    res.status(400).json({
-                        message:
-                            "Slot does not belong to selected centre"
-                    });
-                });
-            }
-
-            if (
-                Number(slot.booked_count) >=
-                Number(slot.capacity)
-            ) {
-                return db.rollback(() => {
-                    res.status(400).json({
-                        message: "Slot is full"
-                    });
-                });
-            }
-
-            /* CHECK FARMER */
-
-            const farmerSql = `
-                SELECT id
-                FROM users
+            const slotSql = `
+                SELECT *
+                FROM slots
                 WHERE id = ?
-                LIMIT 1
+                FOR UPDATE
             `;
 
-            db.query(
-                farmerSql,
-                [farmer_id],
-                (err, farmerResults) => {
+            connection.query(
+                slotSql,
+                [slot_id],
+                (err, slotResults) => {
+
                     if (err) {
-                        return db.rollback(() => {
+                        return connection.rollback(() => {
+                            connection.release();
+
                             res.status(500).json({
-                                message:
-                                    "Failed to check farmer",
+                                message: "Failed to check slot",
                                 error: err.message
                             });
                         });
                     }
 
-                    if (farmerResults.length === 0) {
-                        return db.rollback(() => {
+                    if (slotResults.length === 0) {
+                        return connection.rollback(() => {
+                            connection.release();
+
                             res.status(404).json({
-                                message: "Farmer not found"
+                                message: "Slot not found"
                             });
                         });
                     }
 
-                    /* CHECK CROP BELONGS TO FARMER */
+                    const slot = slotResults[0];
 
-                    const cropSql = `
-                        SELECT
-                            id,
-                            crop_name,
-                            crop_variety,
-                            quantity,
-                            unit
-                        FROM crops
+                    if (
+                        Number(slot.centre_id) !==
+                        Number(centre_id)
+                    ) {
+                        return connection.rollback(() => {
+                            connection.release();
+
+                            res.status(400).json({
+                                message:
+                                    "Slot does not belong to selected centre"
+                            });
+                        });
+                    }
+
+                    if (
+                        Number(slot.booked_count) >=
+                        Number(slot.capacity)
+                    ) {
+                        return connection.rollback(() => {
+                            connection.release();
+
+                            res.status(400).json({
+                                message: "Slot is full"
+                            });
+                        });
+                    }
+
+                    /* CHECK FARMER */
+
+                    const farmerSql = `
+                        SELECT id
+                        FROM users
                         WHERE id = ?
-                        AND farmer_id = ?
                         LIMIT 1
                     `;
 
-                    db.query(
-                        cropSql,
-                        [crop_id, farmer_id],
-                        (err, cropResults) => {
+                    connection.query(
+                        farmerSql,
+                        [farmer_id],
+                        (err, farmerResults) => {
+
                             if (err) {
-                                return db.rollback(() => {
+                                return connection.rollback(() => {
+                                    connection.release();
+
                                     res.status(500).json({
                                         message:
-                                            "Failed to check crop",
+                                            "Failed to check farmer",
                                         error: err.message
                                     });
                                 });
                             }
 
-                            if (cropResults.length === 0) {
-                                return db.rollback(() => {
+                            if (farmerResults.length === 0) {
+                                return connection.rollback(() => {
+                                    connection.release();
+
                                     res.status(404).json({
-                                        message:
-                                            "Selected crop was not found for this farmer"
+                                        message: "Farmer not found"
                                     });
                                 });
                             }
 
-                            const crop = cropResults[0];
+                            /* CHECK CROP BELONGS TO FARMER */
 
-                            /* CHECK AVAILABLE QUANTITY */
-
-                            if (
-                                bookingQuantity >
-                                Number(crop.quantity)
-                            ) {
-                                return db.rollback(() => {
-                                    res.status(400).json({
-                                        message:
-                                            `Booking quantity cannot exceed available quantity of ${crop.quantity} ${crop.unit || "kg"}`
-                                    });
-                                });
-                            }
-
-                            /* CHECK ACTIVE BOOKING */
-
-                            const duplicateSql = `
-                                SELECT id
-                                FROM bookings
-                                WHERE farmer_id = ?
-                                AND status = 'waiting'
+                            const cropSql = `
+                                SELECT
+                                    id,
+                                    crop_name,
+                                    crop_variety,
+                                    quantity,
+                                    unit
+                                FROM crops
+                                WHERE id = ?
+                                AND farmer_id = ?
                                 LIMIT 1
                             `;
 
-                            db.query(
-                                duplicateSql,
-                                [farmer_id],
-                                (err, duplicateResults) => {
+                            connection.query(
+                                cropSql,
+                                [crop_id, farmer_id],
+                                (err, cropResults) => {
+
                                     if (err) {
-                                        return db.rollback(() => {
+                                        return connection.rollback(() => {
+                                            connection.release();
+
                                             res.status(500).json({
                                                 message:
-                                                    "Failed to check existing booking",
+                                                    "Failed to check crop",
                                                 error: err.message
                                             });
                                         });
                                     }
 
-                                    if (
-                                        duplicateResults.length > 0
-                                    ) {
-                                        return db.rollback(() => {
-                                            res.status(400).json({
+                                    if (cropResults.length === 0) {
+                                        return connection.rollback(() => {
+                                            connection.release();
+
+                                            res.status(404).json({
                                                 message:
-                                                    "You already have an active booking"
+                                                    "Selected crop was not found for this farmer"
                                             });
                                         });
                                     }
 
-                                    /* QUEUE POSITION */
+                                    const crop = cropResults[0];
 
-                                    const positionSql = `
-                                        SELECT COUNT(*) AS count
-                                        FROM queue
-                                        WHERE centre_id = ?
+                                    /* CHECK AVAILABLE QUANTITY */
+
+                                    if (
+                                        bookingQuantity >
+                                        Number(crop.quantity)
+                                    ) {
+                                        return connection.rollback(() => {
+                                            connection.release();
+
+                                            res.status(400).json({
+                                                message:
+                                                    `Booking quantity cannot exceed available quantity of ${crop.quantity} ${crop.unit || "kg"}`
+                                            });
+                                        });
+                                    }
+
+                                    /* CHECK ACTIVE BOOKING */
+
+                                    const duplicateSql = `
+                                        SELECT id
+                                        FROM bookings
+                                        WHERE farmer_id = ?
                                         AND status = 'waiting'
+                                        LIMIT 1
                                     `;
 
-                                    db.query(
-                                        positionSql,
-                                        [centre_id],
-                                        (
-                                            err,
-                                            positionResults
-                                        ) => {
+                                    connection.query(
+                                        duplicateSql,
+                                        [farmer_id],
+                                        (err, duplicateResults) => {
+
                                             if (err) {
-                                                return db.rollback(() => {
+                                                return connection.rollback(() => {
+                                                    connection.release();
+
                                                     res.status(500).json({
                                                         message:
-                                                            "Failed to calculate queue",
-                                                        error:
-                                                            err.message
+                                                            "Failed to check existing booking",
+                                                        error: err.message
                                                     });
                                                 });
                                             }
 
-                                            const position =
-                                                Number(
-                                                    positionResults[0]
-                                                        .count
-                                                ) + 1;
-
-                                            const estimatedWait =
-                                                (position - 1) * 15;
-
-                                            /* TOKEN PREFIX */
-
-                                            let prefix = "A";
-
                                             if (
-                                                Number(centre_id) === 2
+                                                duplicateResults.length > 0
                                             ) {
-                                                prefix = "B";
+                                                return connection.rollback(() => {
+                                                    connection.release();
+
+                                                    res.status(400).json({
+                                                        message:
+                                                            "You already have an active booking"
+                                                    });
+                                                });
                                             }
 
-                                            if (
-                                                Number(centre_id) === 3
-                                            ) {
-                                                prefix = "C";
-                                            }
+                                            /* QUEUE POSITION */
 
-                                            /* GENERATE TOKEN */
-
-                                            const tokenSql = `
-                                                SELECT token_number
-                                                FROM bookings
+                                            const positionSql = `
+                                                SELECT COUNT(*) AS count
+                                                FROM queue
                                                 WHERE centre_id = ?
+                                                AND status = 'waiting'
                                             `;
 
-                                            db.query(
-                                                tokenSql,
+                                            connection.query(
+                                                positionSql,
                                                 [centre_id],
-                                                (
-                                                    err,
-                                                    tokenResults
-                                                ) => {
+                                                (err, positionResults) => {
+
                                                     if (err) {
-                                                        return db.rollback(() => {
+                                                        return connection.rollback(() => {
+                                                            connection.release();
+
                                                             res.status(500).json({
                                                                 message:
-                                                                    "Failed to generate token",
+                                                                    "Failed to calculate queue",
                                                                 error:
                                                                     err.message
                                                             });
                                                         });
                                                     }
 
-                                                    let highestNumber = 0;
+                                                    const position =
+                                                        Number(
+                                                            positionResults[0]
+                                                                .count
+                                                        ) + 1;
 
-                                                    tokenResults.forEach(
-                                                        (row) => {
-                                                            const token =
-                                                                row.token_number ||
-                                                                "";
+                                                    const estimatedWait =
+                                                        (position - 1) * 15;
 
-                                                            if (
-                                                                token.startsWith(
-                                                                    prefix
-                                                                )
-                                                            ) {
-                                                                const number =
-                                                                    parseInt(
-                                                                        token.substring(
-                                                                            prefix.length
-                                                                        ),
-                                                                        10
-                                                                    );
+                                                    /* TOKEN PREFIX */
 
-                                                                if (
-                                                                    !isNaN(
-                                                                        number
-                                                                    ) &&
-                                                                    number >
-                                                                        highestNumber
-                                                                ) {
-                                                                    highestNumber =
-                                                                        number;
-                                                                }
-                                                            }
-                                                        }
-                                                    );
+                                                    let prefix = "A";
 
-                                                    const tokenNumber =
-                                                        prefix +
-                                                        String(
-                                                            highestNumber +
-                                                                1
-                                                        ).padStart(
-                                                            3,
-                                                            "0"
-                                                        );
+                                                    if (
+                                                        Number(centre_id) === 2
+                                                    ) {
+                                                        prefix = "B";
+                                                    }
 
-                                                    /* INSERT BOOKING */
+                                                    if (
+                                                        Number(centre_id) === 3
+                                                    ) {
+                                                        prefix = "C";
+                                                    }
 
-                                                    const bookingSql = `
-                                                        INSERT INTO bookings
-                                                        (
-                                                            farmer_id,
-                                                            crop_id,
-                                                            crop_variety,
-                                                            quantity,
-                                                            centre_id,
-                                                            slot_id,
-                                                            token_number,
-                                                            status
-                                                        )
-                                                        VALUES
-                                                        (?, ?, ?, ?, ?, ?, ?, 'waiting')
+                                                    /* GENERATE TOKEN */
+
+                                                    const tokenSql = `
+                                                        SELECT token_number
+                                                        FROM bookings
+                                                        WHERE centre_id = ?
                                                     `;
 
-                                                    db.query(
-                                                        bookingSql,
-                                                        [
-                                                            farmer_id,
-                                                            crop_id,
-                                                            crop_variety,
-                                                            bookingQuantity,
-                                                            centre_id,
-                                                            slot_id,
-                                                            tokenNumber
-                                                        ],
-                                                        (
-                                                            err,
-                                                            bookingResult
-                                                        ) => {
+                                                    connection.query(
+                                                        tokenSql,
+                                                        [centre_id],
+                                                        (err, tokenResults) => {
+
                                                             if (err) {
-                                                                return db.rollback(() => {
+                                                                return connection.rollback(() => {
+                                                                    connection.release();
+
                                                                     res.status(500).json({
                                                                         message:
-                                                                            "Booking failed",
+                                                                            "Failed to generate token",
                                                                         error:
                                                                             err.message
                                                                     });
                                                                 });
                                                             }
 
-                                                            const bookingId =
-                                                                bookingResult.insertId;
+                                                            let highestNumber = 0;
 
-                                                            /* INSERT QUEUE */
+                                                            tokenResults.forEach(
+                                                                (row) => {
 
-                                                            const queueSql = `
-                                                                INSERT INTO queue
+                                                                    const token =
+                                                                        row.token_number ||
+                                                                        "";
+
+                                                                    if (
+                                                                        token.startsWith(
+                                                                            prefix
+                                                                        )
+                                                                    ) {
+
+                                                                        const number =
+                                                                            parseInt(
+                                                                                token.substring(
+                                                                                    prefix.length
+                                                                                ),
+                                                                                10
+                                                                            );
+
+                                                                        if (
+                                                                            !isNaN(
+                                                                                number
+                                                                            ) &&
+                                                                            number >
+                                                                                highestNumber
+                                                                        ) {
+                                                                            highestNumber =
+                                                                                number;
+                                                                        }
+                                                                    }
+                                                                }
+                                                            );
+
+                                                            const tokenNumber =
+                                                                prefix +
+                                                                String(
+                                                                    highestNumber +
+                                                                        1
+                                                                ).padStart(
+                                                                    3,
+                                                                    "0"
+                                                                );
+
+                                                            /* INSERT BOOKING */
+
+                                                            const bookingSql = `
+                                                                INSERT INTO bookings
                                                                 (
-                                                                    booking_id,
                                                                     farmer_id,
+                                                                    crop_id,
+                                                                    crop_variety,
+                                                                    quantity,
                                                                     centre_id,
+                                                                    slot_id,
                                                                     token_number,
-                                                                    position,
-                                                                    status,
-                                                                    estimated_wait
+                                                                    status
                                                                 )
                                                                 VALUES
-                                                                (?, ?, ?, ?, ?, 'waiting', ?)
+                                                                (?, ?, ?, ?, ?, ?, ?, 'waiting')
                                                             `;
 
-                                                            db.query(
-                                                                queueSql,
+                                                            connection.query(
+                                                                bookingSql,
                                                                 [
-                                                                    bookingId,
                                                                     farmer_id,
+                                                                    crop_id,
+                                                                    crop_variety,
+                                                                    bookingQuantity,
                                                                     centre_id,
-                                                                    tokenNumber,
-                                                                    position,
-                                                                    estimatedWait
+                                                                    slot_id,
+                                                                    tokenNumber
                                                                 ],
-                                                                (err) => {
+                                                                (
+                                                                    err,
+                                                                    bookingResult
+                                                                ) => {
+
                                                                     if (err) {
-                                                                        return db.rollback(() => {
+                                                                        return connection.rollback(() => {
+                                                                            connection.release();
+
                                                                             res.status(500).json({
                                                                                 message:
-                                                                                    "Failed to add farmer to queue",
+                                                                                    "Booking failed",
                                                                                 error:
                                                                                     err.message
                                                                             });
                                                                         });
                                                                     }
 
-                                                                    /* UPDATE SLOT */
+                                                                    const bookingId =
+                                                                        bookingResult.insertId;
 
-                                                                    const updateSlotSql = `
-                                                                        UPDATE slots
-                                                                        SET booked_count =
-                                                                            booked_count + 1
-                                                                        WHERE id = ?
+                                                                    /* INSERT QUEUE */
+
+                                                                    const queueSql = `
+                                                                        INSERT INTO queue
+                                                                        (
+                                                                            booking_id,
+                                                                            farmer_id,
+                                                                            centre_id,
+                                                                            token_number,
+                                                                            position,
+                                                                            status,
+                                                                            estimated_wait
+                                                                        )
+                                                                        VALUES
+                                                                        (?, ?, ?, ?, ?, 'waiting', ?)
                                                                     `;
 
-                                                                    db.query(
-                                                                        updateSlotSql,
-                                                                        [slot_id],
+                                                                    connection.query(
+                                                                        queueSql,
+                                                                        [
+                                                                            bookingId,
+                                                                            farmer_id,
+                                                                            centre_id,
+                                                                            tokenNumber,
+                                                                            position,
+                                                                            estimatedWait
+                                                                        ],
                                                                         (err) => {
+
                                                                             if (err) {
-                                                                                return db.rollback(() => {
+                                                                                return connection.rollback(() => {
+                                                                                    connection.release();
+
                                                                                     res.status(500).json({
                                                                                         message:
-                                                                                            "Failed to update slot",
+                                                                                            "Failed to add farmer to queue",
                                                                                         error:
                                                                                             err.message
                                                                                     });
                                                                                 });
                                                                             }
 
-                                                                            db.commit(
-                                                                                (
-                                                                                    commitError
-                                                                                ) => {
-                                                                                    if (
-                                                                                        commitError
-                                                                                    ) {
-                                                                                        return db.rollback(() => {
+                                                                            /* UPDATE SLOT */
+
+                                                                            const updateSlotSql = `
+                                                                                UPDATE slots
+                                                                                SET booked_count =
+                                                                                    booked_count + 1
+                                                                                WHERE id = ?
+                                                                            `;
+
+                                                                            connection.query(
+                                                                                updateSlotSql,
+                                                                                [slot_id],
+                                                                                (err) => {
+
+                                                                                    if (err) {
+                                                                                        return connection.rollback(() => {
+                                                                                            connection.release();
+
                                                                                             res.status(500).json({
                                                                                                 message:
-                                                                                                    "Booking commit failed",
+                                                                                                    "Failed to update slot",
                                                                                                 error:
-                                                                                                    commitError.message
+                                                                                                    err.message
                                                                                             });
                                                                                         });
                                                                                     }
 
-                                                                                    res.status(
-                                                                                        201
-                                                                                    ).json({
-                                                                                        message:
-                                                                                            "Slot booked successfully ✅",
-                                                                                        booking_id:
-                                                                                            bookingId,
-                                                                                        token_number:
-                                                                                            tokenNumber,
-                                                                                        position:
-                                                                                            position,
-                                                                                        estimated_wait:
-                                                                                            estimatedWait,
-                                                                                        quantity:
-                                                                                            bookingQuantity,
-                                                                                        unit:
-                                                                                            crop.unit ||
-                                                                                            "kg"
-                                                                                    });
+                                                                                    /* COMMIT */
+
+                                                                                    connection.commit(
+                                                                                        (
+                                                                                            commitError
+                                                                                        ) => {
+
+                                                                                            if (
+                                                                                                commitError
+                                                                                            ) {
+                                                                                                return connection.rollback(() => {
+                                                                                                    connection.release();
+
+                                                                                                    res.status(500).json({
+                                                                                                        message:
+                                                                                                            "Booking commit failed",
+                                                                                                        error:
+                                                                                                            commitError.message
+                                                                                                    });
+                                                                                                });
+                                                                                            }
+
+                                                                                            connection.release();
+
+                                                                                            res.status(
+                                                                                                201
+                                                                                            ).json({
+                                                                                                message:
+                                                                                                    "Slot booked successfully ✅",
+
+                                                                                                booking_id:
+                                                                                                    bookingId,
+
+                                                                                                token_number:
+                                                                                                    tokenNumber,
+
+                                                                                                position:
+                                                                                                    position,
+
+                                                                                                estimated_wait:
+                                                                                                    estimatedWait,
+
+                                                                                                quantity:
+                                                                                                    bookingQuantity,
+
+                                                                                                unit:
+                                                                                                    crop.unit ||
+                                                                                                    "kg"
+                                                                                            });
+                                                                                        }
+                                                                                    );
                                                                                 }
                                                                             );
                                                                         }
@@ -832,7 +906,6 @@ app.post("/api/bookings", (req, res) => {
         });
     });
 });
-
 /* =====================================================
    FARMER QUEUE
 ===================================================== */
