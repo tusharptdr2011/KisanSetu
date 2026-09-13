@@ -681,19 +681,10 @@ app.post("/api/bookings", (req, res) => {
 
                                                     /* TOKEN PREFIX */
 
-                                                    let prefix = "A";
+                                                  /* TOKEN PREFIX — UNIQUE FOR EVERY CENTRE */
 
-                                                    if (
-                                                        Number(centre_id) === 2
-                                                    ) {
-                                                        prefix = "B";
-                                                    }
-
-                                                    if (
-                                                        Number(centre_id) === 3
-                                                    ) {
-                                                        prefix = "C";
-                                                    }
+                                                    const prefix =
+                                                    "C" + String(centre_id).padStart(3, "0");
 
                                                     /* GENERATE TOKEN */
 
