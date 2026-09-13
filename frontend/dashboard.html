@@ -695,6 +695,18 @@
                 </div>
 
                 <div class="crop-form-group">
+                    <label for="cropVariety">Crop Variety</label>
+                    <select id="cropVariety" required>
+                        <option value="">Select variety</option>
+                    </select>
+                </div>
+
+                <div class="crop-form-group" id="otherVarietyGroup" style="display:none;">
+                    <label for="otherVarietyName">Other Variety</label>
+                    <input type="text" id="otherVarietyName" placeholder="Enter variety">
+                </div>
+
+                <div class="crop-form-group">
                     <label for="cropInputQuantity">Quantity</label>
                     <input
                         type="number"
@@ -787,6 +799,34 @@
         document.getElementById("cropModal").classList.remove("show");
     }
 
+    const cropVarieties = {
+        Wheat: ["Lokwan", "Sharbati", "Durum", "Other"],
+        Rice: ["Basmati 1121", "IR64", "Pusa Basmati 1509", "Other"],
+        Soybean: ["JS 335", "JS 9560", "NRC 37", "Other"],
+        Maize: ["Pioneer 3396", "HQPM 1", "DHM 117", "Other"],
+        Cotton: ["Bt Cotton", "Desi Cotton", "Other"],
+        Gram: ["JG 11", "JG 14", "JG 16", "Other"],
+        Mustard: ["Pusa Bold", "Varuna", "Giriraj", "Other"],
+        Other: ["Other"]
+    };
+
+    function loadCropVarieties() {
+        const crop = document.getElementById("cropSelect").value;
+        const select = document.getElementById("cropVariety");
+        select.innerHTML = '<option value="">Select variety</option>';
+
+        (cropVarieties[crop] || []).forEach(variety => {
+            const option = document.createElement("option");
+            option.value = variety;
+            option.textContent = variety;
+            select.appendChild(option);
+        });
+
+        document.getElementById("otherVarietyGroup").style.display = "none";
+        document.getElementById("otherVarietyName").required = false;
+        document.getElementById("otherVarietyName").value = "";
+    }
+
     document.getElementById("cropSelect").addEventListener("change", function () {
         const otherGroup = document.getElementById("otherCropGroup");
         const otherInput = document.getElementById("otherCropName");
@@ -798,6 +838,22 @@
             otherGroup.style.display = "none";
             otherInput.required = false;
             otherInput.value = "";
+        }
+
+        loadCropVarieties();
+    });
+
+    document.getElementById("cropVariety").addEventListener("change", function () {
+        const group = document.getElementById("otherVarietyGroup");
+        const input = document.getElementById("otherVarietyName");
+
+        if (this.value === "Other") {
+            group.style.display = "block";
+            input.required = true;
+        } else {
+            group.style.display = "none";
+            input.required = false;
+            input.value = "";
         }
     });
 
@@ -818,6 +874,14 @@
                 ? document.getElementById("otherCropName").value.trim()
                 : selectValue;
 
+        const varietySelectValue =
+            document.getElementById("cropVariety").value;
+
+        const cropVariety =
+            varietySelectValue === "Other"
+                ? document.getElementById("otherVarietyName").value.trim()
+                : varietySelectValue;
+
         const quantity =
             Number(document.getElementById("cropInputQuantity").value);
 
@@ -833,6 +897,12 @@
         if (!cropName) {
             message.className = "crop-form-message error";
             message.textContent = "Please select or enter a crop name.";
+            return;
+        }
+
+        if (!cropVariety) {
+            message.className = "crop-form-message error";
+            message.textContent = "Please select or enter a crop variety.";
             return;
         }
 
@@ -856,6 +926,7 @@
                     body: JSON.stringify({
                         farmer_id: farmerId,
                         crop_name: cropName,
+                        crop_variety: cropVariety,
                         quantity: quantity,
                         unit: unit
                     })
@@ -880,6 +951,10 @@
 
             document.getElementById("cropForm").reset();
             document.getElementById("otherCropGroup").style.display = "none";
+            document.getElementById("otherVarietyGroup").style.display = "none";
+            document.getElementById("otherVarietyName").required = false;
+            document.getElementById("cropVariety").innerHTML =
+                '<option value="">Select variety</option>';
 
             await loadCrops();
 
@@ -1287,4 +1362,4 @@
 
 </body>
 
-</html>
+</html> 
