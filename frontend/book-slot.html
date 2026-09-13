@@ -547,25 +547,49 @@ label{display:block!important;margin:0 0 8px!important;color:var(--gd)!important
 
         <div class="section">
 
-            <h2 data-i18n="cropDetails">🌾 Crop Details</h2>
+           <h2 data-i18n="cropDetails">🌾 Crop Details</h2>
 
-            <div class="crop-selection-grid">
-                <div>
-                    <select id="cropSelect" class="crop-select" onchange="selectCrop()" required>
-                        <option value="" data-i18n="chooseCrop">Choose a crop</option>
-                    </select>
-                </div>
+<div class="crop-selection-grid">
 
-                <div>
-                    <label data-i18n="cropVariety">Crop Variety</label>
-                    <select id="cropVariety" class="crop-select" onchange="selectVariety()" required disabled>
-                        <option value="" data-i18n="chooseVariety">Select crop first</option>
-                    </select>
-                    <small id="varietyHint" style="display:block;margin-top:7px;color:var(--muted);font-size:12px;">
-                        Select a crop to see available varieties.
-                    </small>
-                </div>
-            </div>
+    <div>
+        <label data-i18n="selectCrop">Select Crop</label>
+
+        <select
+            id="cropSelect"
+            class="crop-select"
+            onchange="selectCrop()"
+            required
+        >
+            <option value="" data-i18n="chooseCrop">
+                Choose a crop
+            </option>
+        </select>
+    </div>
+
+    <div>
+        <label data-i18n="cropVariety">Crop Variety</label>
+
+        <select
+            id="cropVariety"
+            class="crop-select"
+            onchange="selectVariety()"
+            required
+            disabled
+        >
+            <option value="" data-i18n="chooseVariety">
+                Choose a variety
+            </option>
+        </select>
+
+        <small
+            id="varietyHint"
+            style="display:block;margin-top:7px;color:var(--muted);font-size:12px;"
+        >
+            Select a crop to see available varieties.
+        </small>
+    </div>
+
+</div>
 
             <p id="availableQuantity" class="available-quantity"></p>
 
