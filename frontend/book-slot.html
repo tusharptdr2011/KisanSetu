@@ -135,6 +135,58 @@
         }
 
 
+
+        /* CROP SELECTION */
+
+        .crop-selection {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: 5px;
+        }
+
+        .crop-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .crop-field label {
+            font-weight: bold;
+            color: #176b3a;
+        }
+
+        .crop-field select {
+            width: 100%;
+            padding: 14px 15px;
+            border: 2px solid #e0e8e1;
+            border-radius: 12px;
+            background: white;
+            color: #173f2a;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .crop-field select:focus {
+            border-color: #168149;
+        }
+
+        .crop-info {
+            margin-top: 15px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: #eef9f1;
+            color: #176b3a;
+            display: none;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 850px) {
+            .crop-selection {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* SLOTS */
 
         .slot-grid {
@@ -348,6 +400,54 @@
 
 
 
+
+        <!-- ========================================= -->
+        <!-- CROP SELECTION -->
+        <!-- ========================================= -->
+
+        <div class="section">
+
+            <h2>
+                🌾 Select Crop
+            </h2>
+
+            <div class="crop-selection">
+
+                <div class="crop-field">
+
+                    <label for="cropSelect">
+                        Crop
+                    </label>
+
+                    <select id="cropSelect" onchange="selectCrop()">
+                        <option value="">
+                            Select your crop
+                        </option>
+                    </select>
+
+                </div>
+
+                <div class="crop-field">
+
+                    <label for="varietySelect">
+                        Crop Variety
+                    </label>
+
+                    <select id="varietySelect" onchange="selectVariety()" disabled>
+                        <option value="">
+                            Select crop first
+                        </option>
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div id="cropInfo" class="crop-info"></div>
+
+        </div>
+
+
         <!-- ========================================= -->
         <!-- SLOTS -->
         <!-- ========================================= -->
@@ -451,12 +551,260 @@
 
     let slots = [];
 
+    let crops = [];
+
     let selectedCentreId = null;
 
     let selectedSlotId = null;
 
+    let selectedCropId = null;
+
+    let selectedCropVariety = null;
+
     let bookingInProgress = false;
 
+    // Common varieties shown according to the selected crop.
+    const cropVarieties = {
+        wheat: [
+            "Lokwan",
+            "Sharbati",
+            "Durum"
+        ],
+        soybean: [
+            "JS 335",
+            "JS 9560",
+            "NRC 37"
+        ],
+        mustard: [
+            "Pusa Bold",
+            "Varuna",
+            "Giriraj"
+        ],
+        gram: [
+            "JG 11",
+            "JG 14",
+            "JG 16"
+        ],
+        maize: [
+            "Pioneer 3396",
+            "HQPM 1",
+            "DHM 117"
+        ],
+        rice: [
+            "Basmati 1121",
+            "IR64",
+            "Pusa Basmati 1509"
+        ],
+        cotton: [
+            "Bt Cotton",
+            "Desi Cotton"
+        ],
+        potato: [
+            "Kufri Jyoti",
+            "Kufri Pukhraj",
+            "Kufri Badshah"
+        ],
+        onion: [
+            "N-53",
+            "Bhima Super",
+            "Bhima Kiran"
+        ]
+    };
+
+
+
+    // ==================================================
+    // LOAD FARMER CROPS
+    // ==================================================
+
+    async function loadCrops() {
+
+        const select =
+            document.getElementById("cropSelect");
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API}/api/crops/${farmerId}`
+                );
+
+            if (!response.ok) {
+                throw new Error("Unable to load crops");
+            }
+
+            crops = await response.json();
+
+            select.innerHTML =
+                '<option value="">Select your crop</option>';
+
+            if (crops.length === 0) {
+
+                select.innerHTML =
+                    '<option value="">No crop added yet</option>';
+
+                document.getElementById(
+                    "varietySelect"
+                ).disabled = true;
+
+                return;
+            }
+
+            crops.forEach(crop => {
+
+                const option =
+                    document.createElement("option");
+
+                option.value = crop.id;
+
+                option.textContent =
+                    `${crop.crop_name} — ${Number(crop.quantity).toFixed(2)} ${crop.unit || "kg"}`;
+
+                select.appendChild(option);
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Crop Error:",
+                error
+            );
+
+            select.innerHTML =
+                '<option value="">Unable to load crops</option>';
+
+        }
+
+    }
+
+
+    // ==================================================
+    // SELECT CROP
+    // ==================================================
+
+    function selectCrop() {
+
+        const cropId =
+            document.getElementById("cropSelect").value;
+
+        const varietySelect =
+            document.getElementById("varietySelect");
+
+        const cropInfo =
+            document.getElementById("cropInfo");
+
+        selectedCropId =
+            cropId ? Number(cropId) : null;
+
+        selectedCropVariety = null;
+
+        varietySelect.innerHTML =
+            '<option value="">Select variety</option>';
+
+        varietySelect.disabled =
+            !selectedCropId;
+
+        cropInfo.style.display =
+            "none";
+
+        if (!selectedCropId) {
+            updateBookButton();
+            return;
+        }
+
+        const crop =
+            crops.find(
+                item =>
+                    Number(item.id) === selectedCropId
+            );
+
+        if (!crop) {
+            updateBookButton();
+            return;
+        }
+
+        const key =
+            String(crop.crop_name)
+                .trim()
+                .toLowerCase();
+
+        let varieties =
+            cropVarieties[key] || [];
+
+        // If a saved variety exists and is not in the
+        // standard list, keep it available too.
+        if (
+            crop.crop_variety &&
+            !varieties.includes(crop.crop_variety)
+        ) {
+            varieties = [
+                crop.crop_variety,
+                ...varieties
+            ];
+        }
+
+        if (varieties.length === 0) {
+            varieties = ["Other"];
+        }
+
+        varieties.forEach(
+            variety => {
+
+                const option =
+                    document.createElement("option");
+
+                option.value = variety;
+                option.textContent = variety;
+
+                varietySelect.appendChild(option);
+
+            }
+        );
+
+        cropInfo.innerHTML =
+            `<strong>${crop.crop_name}</strong> · ${Number(crop.quantity).toFixed(2)} ${crop.unit || "kg"}`;
+
+        cropInfo.style.display =
+            "block";
+
+        updateBookButton();
+
+    }
+
+
+    // ==================================================
+    // SELECT VARIETY
+    // ==================================================
+
+    function selectVariety() {
+
+        selectedCropVariety =
+            document.getElementById(
+                "varietySelect"
+            ).value || null;
+
+        updateBookButton();
+
+    }
+
+
+    // ==================================================
+    // UPDATE BOOK BUTTON
+    // ==================================================
+
+    function updateBookButton() {
+
+        const button =
+            document.getElementById("bookButton");
+
+        button.disabled =
+            !selectedCentreId ||
+            !selectedSlotId ||
+            !selectedCropId ||
+            !selectedCropVariety;
+
+    }
 
 
     // ==================================================
@@ -622,9 +970,7 @@
         );
 
 
-        document.getElementById(
-            "bookButton"
-        ).disabled = true;
+        updateBookButton();
 
 
         clearMessage();
@@ -880,9 +1226,7 @@
         );
 
 
-        document.getElementById(
-            "bookButton"
-        ).disabled = false;
+        updateBookButton();
 
 
         clearMessage();
@@ -906,12 +1250,14 @@
 
 
         if (
+            !selectedCropId ||
+            !selectedCropVariety ||
             !selectedCentreId ||
             !selectedSlotId
         ) {
 
             showMessage(
-                "Please select a centre and slot.",
+                "Please select crop, crop variety, centre and slot.",
                 "error"
             );
 
@@ -967,6 +1313,12 @@
 
                                 farmer_id:
                                     farmerId,
+
+                                crop_id:
+                                    selectedCropId,
+
+                                crop_variety:
+                                    selectedCropVariety,
 
                                 centre_id:
                                     selectedCentreId,
@@ -1232,6 +1584,8 @@
     // ==================================================
     // START
     // ==================================================
+
+    loadCrops();
 
     loadCentres();
 
