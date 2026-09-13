@@ -1071,8 +1071,8 @@
 
                         <div class="form-group">
 
-                            <label for="procurementQuantity">
-                                Quantity
+                            <label id="procurementQuantityLabel" for="procurementQuantity">
+                                Quantity (kg)
                             </label>
 
                             <div style="display:grid;grid-template-columns:1fr 150px;gap:10px;">
@@ -1701,9 +1701,15 @@
     }
 
     function updateRateLabel() {
+        const unitLabel = getUnitLabel();
+
+        document.getElementById("procurementQuantityLabel")
+            .textContent =
+            "Quantity (" + unitLabel + ")";
+
         document.getElementById("procurementRateLabel")
             .textContent =
-            "Rate (₹ per " + getUnitLabel() + ")";
+            "Rate (₹ per " + unitLabel + ")";
     }
 
     function changeProcurementUnit() {
