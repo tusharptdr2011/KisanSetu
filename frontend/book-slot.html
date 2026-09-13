@@ -463,20 +463,42 @@ label{display:block!important;margin:0 0 8px!important;color:var(--gd)!important
   grid-template-columns:1fr 1fr;
   gap:16px;
 }
-.crop-selection-grid > div:first-child:before{
-  content:"Select Crop";
-  display:block;
-  margin:0 0 8px;
-  color:var(--gd);
-  font-size:13px;
-  font-weight:850;
-}
 #cropVariety:disabled{
   color:#8b9791!important;
   background:#f4f7f5!important;
 }
 @media(max-width:600px){
   .crop-selection-grid{grid-template-columns:1fr}
+}
+
+
+/* ===== STATE / MANDI / CENTRE SELECTION ===== */
+.location-selection-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+}
+.location-field{
+    min-width:0;
+}
+.location-full{
+    grid-column:1 / -1;
+}
+.location-field .crop-select{
+    cursor:pointer;
+}
+.location-field .crop-select:disabled{
+    cursor:not-allowed;
+    opacity:.72;
+    background:#f2f6f3!important;
+}
+@media(max-width:600px){
+    .location-selection-grid{
+        grid-template-columns:1fr;
+    }
+    .location-full{
+        grid-column:auto;
+    }
 }
 
 </style>
@@ -570,20 +592,49 @@ label{display:block!important;margin:0 0 8px!important;color:var(--gd)!important
         <div class="section">
 
             <h2>
-                <span data-i18n="centreTitle">📍 Procurement Centre</span>
+                <span data-i18n="centreTitle">📍 Procurement Location</span>
             </h2>
 
+            <div class="location-selection-grid">
 
-            <div
-                id="centresContainer"
-                class="centre-grid"
-            >
+                <div class="location-field">
+                    <label for="stateSelect" data-i18n="state">
+                        State
+                    </label>
 
-                <p>
-                    Loading centres...
-                </p>
+                    <select
+                        id="stateSelect"
+                        class="crop-select"
+                        onchange="selectState()"
+                        required
+                    >
+                        <option value="" data-i18n="chooseState">
+                            Select State
+                        </option>
+                    </select>
+                </div>
+
+                <div class="location-field">
+                    <label for="centreSelect" data-i18n="procurementCentre">
+                        Procurement Centre
+                    </label>
+
+                    <select
+                        id="centreSelect"
+                        class="crop-select"
+                        onchange="selectCentreFromDropdown()"
+                        disabled
+                        required
+                    >
+                        <option value="" data-i18n="chooseCentre">
+                            Select Procurement Centre
+                        </option>
+                    </select>
+                </div>
 
             </div>
+
+            <div id="centresContainer" class="centre-grid" style="display:none;"></div>
 
         </div>
 
@@ -692,11 +743,15 @@ label{display:block!important;margin:0 0 8px!important;color:var(--gd)!important
     let centres = [];
     let slots = [];
     let crops = [];
+
     let selectedCrop = null;
     let selectedCentreId = null;
     let selectedSlotId = null;
+    let selectedState = "";
+
     let bookingInProgress = false;
     let currentUnit = "kg";
+
 
     // ==================================================
     // LOAD CROPS
@@ -708,13 +763,14 @@ label{display:block!important;margin:0 0 8px!important;color:var(--gd)!important
 
         try {
             const response = await fetch(`${API}/api/crops/${farmerId}`);
+
             if (!response.ok) throw new Error("Unable to load crops");
 
             crops = await response.json();
 
-            select.innerHTML = `<option value="">${t("chooseCrop")}</option>`;
+            select.innerHTML =
+                `<option value="">${t("chooseCrop")}</option>`;
 
-            // Show each crop name only once.
             const uniqueCropNames = [...new Set(
                 crops
                     .filter(crop => Number(crop.quantity) > 0)
@@ -728,19 +784,28 @@ label{display:block!important;margin:0 0 8px!important;color:var(--gd)!important
                 select.appendChild(option);
             });
 
-            varietySelect.innerHTML = `<option value="">${t("chooseVariety")}</option>`;
+            varietySelect.innerHTML =
+                `<option value="">${t("chooseVariety")}</option>`;
             varietySelect.disabled = true;
 
             if (uniqueCropNames.length === 0) {
-                select.innerHTML = `<option value="">${t("noCrops")}</option>`;
+                select.innerHTML =
+                    `<option value="">${t("noCrops")}</option>`;
             }
+
         } catch (error) {
             console.error("Crop Error:", error);
-            select.innerHTML = `<option value="">${t("cropLoadError")}</option>`;
-            varietySelect.innerHTML = `<option value="">${t("chooseVariety")}</option>`;
+
+            select.innerHTML =
+                `<option value="">${t("cropLoadError")}</option>`;
+
+            varietySelect.innerHTML =
+                `<option value="">${t("chooseVariety")}</option>`;
+
             varietySelect.disabled = true;
         }
     }
+
 
     function selectCrop() {
         const cropName = document.getElementById("cropSelect").value;
@@ -750,9 +815,12 @@ label{display:block!important;margin:0 0 8px!important;color:var(--gd)!important
         document.getElementById("bookingQuantity").value = "";
         document.getElementById("quantityError").textContent = "";
 
-        varietySelect.innerHTML = `<option value="">${t("chooseVariety")}</option>`;
+        varietySelect.innerHTML =
+            `<option value="">${t("chooseVariety")}</option>`;
         varietySelect.disabled = true;
-        document.getElementById("varietyHint").textContent = t("varietyHint");
+
+        document.getElementById("varietyHint").textContent =
+            t("varietyHint");
 
         if (!cropName) {
             document.getElementById("availableQuantity").textContent = "";
@@ -760,34 +828,41 @@ label{display:block!important;margin:0 0 8px!important;color:var(--gd)!important
         }
 
         const varieties = crops.filter(
-            crop => crop.crop_name === cropName && Number(crop.quantity) > 0
+            crop =>
+                crop.crop_name === cropName &&
+                Number(crop.quantity) > 0
         );
 
         varieties.forEach(crop => {
             const option = document.createElement("option");
             option.value = crop.id;
-            option.textContent = crop.crop_variety || t("standardVariety");
+            option.textContent =
+                crop.crop_variety || t("standardVariety");
             varietySelect.appendChild(option);
         });
 
         if (varieties.length > 0) {
             varietySelect.disabled = false;
+
             document.getElementById("varietyHint").textContent =
                 `${varieties.length} ${t("varietiesAvailable")}`;
 
-            // If only one variety exists, select it automatically.
             if (varieties.length === 1) {
                 varietySelect.value = String(varieties[0].id);
-                    selectVariety();
+                selectVariety();
             }
         }
     }
 
+
     function selectVariety() {
-        const varietyId = Number(document.getElementById("cropVariety").value);
+        const varietyId =
+            Number(document.getElementById("cropVariety").value);
 
         selectedCrop = crops.find(
-            crop => Number(crop.id) === varietyId && Number(crop.quantity) > 0
+            crop =>
+                Number(crop.id) === varietyId &&
+                Number(crop.quantity) > 0
         ) || null;
 
         document.getElementById("bookingQuantity").value = "";
@@ -803,6 +878,7 @@ label{display:block!important;margin:0 0 8px!important;color:var(--gd)!important
         updateAvailableQuantity();
     }
 
+
     function updateAvailableQuantity() {
         const el = document.getElementById("availableQuantity");
 
@@ -814,10 +890,12 @@ label{display:block!important;margin:0 0 8px!important;color:var(--gd)!important
         const kg = Number(selectedCrop.quantity) || 0;
         const display = convertFromKg(kg, currentUnit);
 
-        el.textContent = `${t("available")}: ${formatNumber(display)} ${unitLabel(currentUnit)}`;
+        el.textContent =
+            `${t("available")}: ${formatNumber(display)} ${unitLabel(currentUnit)}`;
 
         validateBookingQuantity();
     }
+
 
     function convertToKg(value, unit) {
         if (unit === "ton") return value * 1000;
@@ -825,11 +903,13 @@ label{display:block!important;margin:0 0 8px!important;color:var(--gd)!important
         return value;
     }
 
+
     function convertFromKg(value, unit) {
         if (unit === "ton") return value / 1000;
         if (unit === "quintal") return value / 100;
         return value;
     }
+
 
     function unitLabel(unit) {
         if (unit === "quintal") return "Quintal";
@@ -837,29 +917,40 @@ label{display:block!important;margin:0 0 8px!important;color:var(--gd)!important
         return "kg";
     }
 
+
     function formatNumber(value) {
         return Number(value).toLocaleString("en-IN", {
             maximumFractionDigits: 2
         });
     }
 
+
     function changeBookingUnit() {
-        const nextUnit = document.getElementById("unitDisplay").value;
-        const input = document.getElementById("bookingQuantity");
+        const nextUnit =
+            document.getElementById("unitDisplay").value;
+
+        const input =
+            document.getElementById("bookingQuantity");
+
         const oldValue = Number(input.value);
 
         if (oldValue > 0) {
             const kg = convertToKg(oldValue, currentUnit);
-            input.value = Number(convertFromKg(kg, nextUnit).toFixed(2));
+            input.value =
+                Number(convertFromKg(kg, nextUnit).toFixed(2));
         }
 
         currentUnit = nextUnit;
         updateAvailableQuantity();
     }
 
+
     function validateBookingQuantity() {
-        const input = document.getElementById("bookingQuantity");
-        const error = document.getElementById("quantityError");
+        const input =
+            document.getElementById("bookingQuantity");
+
+        const error =
+            document.getElementById("quantityError");
 
         if (!selectedCrop || !input.value) {
             error.textContent = "";
@@ -877,7 +968,9 @@ label{display:block!important;margin:0 0 8px!important;color:var(--gd)!important
 
         if (enteredKg > availableKg + 0.000001) {
             error.textContent =
-                `${t("maxQuantity")}: ${formatNumber(convertFromKg(availableKg, currentUnit))} ${unitLabel(currentUnit)}`;
+                `${t("maxQuantity")}: ${formatNumber(
+                    convertFromKg(availableKg, currentUnit)
+                )} ${unitLabel(currentUnit)}`;
             return false;
         }
 
@@ -885,58 +978,177 @@ label{display:block!important;margin:0 0 8px!important;color:var(--gd)!important
         return true;
     }
 
+
     // ==================================================
-    // LOAD CENTRES
+    // LOAD STATES
     // ==================================================
 
-    async function loadCentres() {
-        const container = document.getElementById("centresContainer");
+    async function loadStates() {
+        const stateSelect =
+            document.getElementById("stateSelect");
 
         try {
-            const response = await fetch(`${API}/api/centres`);
-            if (!response.ok) throw new Error("Unable to load centres");
+            const response =
+                await fetch(`${API}/api/centres`);
 
-            centres = await response.json();
-            container.innerHTML = "";
-
-            if (centres.length === 0) {
-                container.innerHTML = `<p>${t("noCentres")}</p>`;
-                return;
+            if (!response.ok) {
+                throw new Error("Unable to load centres");
             }
 
-            centres.forEach(centre => {
-                const card = document.createElement("div");
-                card.className = "centre-card";
-                card.innerHTML = `
-                    <h3>📍 ${centre.name}</h3>
-                    <p>${t("location")}: ${centre.location}</p>
-                    <p>${t("capacity")}: ${centre.capacity}</p>
-                `;
+            const allCentres = await response.json();
+            centres = allCentres;
 
-                card.onclick = () => selectCentre(centre.id, card);
-                container.appendChild(card);
+            const states = [
+                ...new Set(
+                    centres
+                        .map(centre => centre.state)
+                        .filter(Boolean)
+                )
+            ].sort();
+
+            stateSelect.innerHTML =
+                `<option value="">${t("chooseState")}</option>`;
+
+            states.forEach(state => {
+                const option = document.createElement("option");
+                option.value = state;
+                option.textContent = state;
+                stateSelect.appendChild(option);
             });
+
         } catch (error) {
-            console.error("Centre Error:", error);
-            container.innerHTML = `
-                <p style="color:red;">
-                    ${t("unableCentres")}<br>${t("backendRunning")}
-                </p>`;
+            console.error("State Error:", error);
+
+            stateSelect.innerHTML =
+                `<option value="">${t("stateLoadError")}</option>`;
         }
     }
 
-    function selectCentre(centreId, card) {
+
+    // ==================================================
+    // SELECT STATE
+    // ==================================================
+
+    function selectState() {
+        selectedState =
+            document.getElementById("stateSelect").value;
+
+        selectedCentreId = null;
+        selectedSlotId = null;
+
+        const centreSelect =
+            document.getElementById("centreSelect");
+
+        centreSelect.innerHTML =
+            `<option value="">${t("chooseCentre")}</option>`;
+
+        centreSelect.disabled = true;
+
+        clearSlots();
+
+        if (!selectedState) return;
+
+        const stateCentres =
+            centres.filter(
+                centre => centre.state === selectedState
+            );
+
+        stateCentres
+            .sort((a, b) =>
+                String(a.name).localeCompare(String(b.name))
+            )
+            .forEach(centre => {
+                const option = document.createElement("option");
+                option.value = centre.id;
+                option.textContent = centre.name;
+                centreSelect.appendChild(option);
+            });
+
+        if (stateCentres.length > 0) {
+            centreSelect.disabled = false;
+        } else {
+            centreSelect.innerHTML =
+                `<option value="">${t("noCentres")}</option>`;
+        }
+    }
+
+
+    // ==================================================
+    // SELECT CENTRE
+    // ==================================================
+
+    function selectCentreFromDropdown() {
+        const centreId =
+            Number(
+                document.getElementById("centreSelect").value
+            ) || null;
+
         selectedCentreId = centreId;
         selectedSlotId = null;
 
-        document.querySelectorAll(".centre-card")
-            .forEach(c => c.classList.remove("selected"));
+        clearMessage();
 
-        card.classList.add("selected");
+        if (!selectedCentreId) {
+            clearSlots();
+            return;
+        }
+
+        loadSlots();
+    }
+
+
+    function selectCentre(centreId, card) {
+        selectedCentreId = Number(centreId);
+        selectedSlotId = null;
+
+        const select =
+            document.getElementById("centreSelect");
+
+        if (select) {
+            select.value = String(centreId);
+        }
+
+        if (card) {
+            document.querySelectorAll(".centre-card")
+                .forEach(c => c.classList.remove("selected"));
+
+            card.classList.add("selected");
+        }
+
         document.getElementById("bookButton").disabled = true;
+
         clearMessage();
         loadSlots();
     }
+
+
+    function clearSlots() {
+        const container =
+            document.getElementById("slotsContainer");
+
+        container.innerHTML =
+            `<p>${t("selectCentreFirst")}</p>`;
+
+        document.getElementById("bookButton").disabled = true;
+    }
+
+
+    function loadCentres() {
+        // State dropdown now loads centres directly.
+        centres = centres || [];
+        renderCentres();
+    }
+
+
+    function renderCentres() {
+        const container =
+            document.getElementById("centresContainer");
+
+        if (container) {
+            container.innerHTML = "";
+        }
+    }
+
 
     // ==================================================
     // LOAD SLOTS
@@ -1116,7 +1328,13 @@ label{display:block!important;margin:0 0 8px!important;color:var(--gd)!important
             available: "Available",
             invalidQuantity: "Enter a valid quantity.",
             maxQuantity: "Maximum available",
-            centreTitle: "📍 Procurement Centre",
+            centreTitle: "📍 Procurement Location",
+            state: "State",
+            chooseState: "Select State",
+            procurementCentre: "Procurement Centre",
+            chooseCentre: "Select Procurement Centre",
+            stateLoadError: "Unable to load procurement centres",
+            selectCentreFirst: "Please select a procurement centre first.",
             slotsTitle: "🕒 Available Slots",
             bookButton: "🎟️ Book Selected Slot",
             backDashboard: "← Back to Dashboard",
@@ -1161,7 +1379,13 @@ label{display:block!important;margin:0 0 8px!important;color:var(--gd)!important
             available: "उपलब्ध",
             invalidQuantity: "मान्य मात्रा दर्ज करें।",
             maxQuantity: "अधिकतम उपलब्ध",
-            centreTitle: "📍 खरीद केंद्र",
+            centreTitle: "📍 खरीद स्थान",
+            state: "राज्य",
+            chooseState: "राज्य चुनें",
+            procurementCentre: "खरीद केंद्र",
+            chooseCentre: "खरीद केंद्र चुनें",
+            stateLoadError: "खरीद केंद्र लोड नहीं हो सके",
+            selectCentreFirst: "कृपया पहले खरीद केंद्र चुनें।",
             slotsTitle: "🕒 उपलब्ध स्लॉट",
             bookButton: "🎟️ चयनित स्लॉट बुक करें",
             backDashboard: "← डैशबोर्ड पर वापस जाएँ",
@@ -1206,7 +1430,13 @@ label{display:block!important;margin:0 0 8px!important;color:var(--gd)!important
             available: "ઉપલબ્ધ",
             invalidQuantity: "માન્ય જથ્થો દાખલ કરો.",
             maxQuantity: "મહત્તમ ઉપલબ્ધ",
-            centreTitle: "📍 ખરીદી કેન્દ્ર",
+            centreTitle: "📍 ખરીદી સ્થળ",
+            state: "રાજ્ય",
+            chooseState: "રાજ્ય પસંદ કરો",
+            procurementCentre: "ખરીદી કેન્દ્ર",
+            chooseCentre: "ખરીદી કેન્દ્ર પસંદ કરો",
+            stateLoadError: "ખરીદી કેન્દ્રો લોડ થઈ શક્યા નથી",
+            selectCentreFirst: "કૃપા કરીને પહેલા ખરીદી કેન્દ્ર પસંદ કરો.",
             slotsTitle: "🕒 ઉપલબ્ધ સ્લોટ",
             bookButton: "🎟️ પસંદ કરેલો સ્લોટ બુક કરો",
             backDashboard: "← ડેશબોર્ડ પર પાછા જાઓ",
@@ -1464,7 +1694,7 @@ label{display:block!important;margin:0 0 8px!important;color:var(--gd)!important
     applyLanguage(savedLanguage);
 
     loadCrops();
-    loadCentres();
+    loadStates();
 
 
 </script>
