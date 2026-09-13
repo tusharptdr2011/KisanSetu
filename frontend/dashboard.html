@@ -743,7 +743,7 @@
             </div>
 
             <div id="centreSummary" class="centre-summary">
-                <span data-i18n="selectLocationHint">Select state, mandi and procurement centre to book a slot.</span>
+                <span data-i18n="selectLocationHint">Select state and procurement centre to book a slot.</span>
             </div>
 
             <button
@@ -1842,6 +1842,7 @@
     // from Book Slot or another page.
     window.addEventListener("pageshow", function () {
         loadCrops();
+        loadCentres();
         loadQueue();
         loadStatus();
     });
@@ -1852,6 +1853,8 @@
     // =====================================
 
     loadCrops();
+
+    loadCentres();
 
     loadQueue();
 
