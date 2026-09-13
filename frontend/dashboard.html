@@ -1019,29 +1019,23 @@
                             ? queueData[0]
                             : queueData;
 
-                    if (
-                        queueItem &&
-                        queueItem.crop_id
-                    ) {
+                    if (queueItem && (queueItem.crop_id || queueItem.crop_name)) {
 
-                        activeCrop =
-                            crops.find(
-                                crop =>
-                                    Number(crop.id) ===
-                                    Number(queueItem.crop_id)
-                            ) || {
-                                id: queueItem.crop_id,
-                                crop_name:
-                                    queueItem.crop_name ||
-                                    "Selected Crop",
-                                quantity:
-                                    queueItem.booking_quantity ??
-                                    queueItem.crop_quantity ??
-                                    0,
-                                unit:
-                                    queueItem.unit ||
-                                    "kg"
-                            };
+                        activeCrop = crops.find(crop =>
+                            (queueItem.crop_id && Number(crop.id) === Number(queueItem.crop_id)) ||
+                            (queueItem.crop_name && String(crop.crop_name).toLowerCase() === String(queueItem.crop_name).toLowerCase())
+                        ) || {
+                            id: queueItem.crop_id || null,
+                            crop_name: queueItem.crop_name || "Selected Crop",
+                            quantity: queueItem.booking_quantity ?? queueItem.crop_quantity ?? 0,
+                            unit: queueItem.unit || "kg"
+                        };
+
+                        // The queue API returns the quantity booked for this slot.
+                        // Show that quantity on the dashboard instead of the crop's full stock.
+                        if (queueItem.booking_quantity !== undefined && queueItem.booking_quantity !== null) {
+                            activeCrop = { ...activeCrop, quantity: queueItem.booking_quantity };
+                        }
                     }
                 }
 
@@ -1076,21 +1070,18 @@
 
                         // Only use status crop when there is an
                         // actual current booking/procurement record.
-                        if (
-                            status &&
-                            status.crop_id &&
-                            status.crop_name
-                        ) {
+                        if (status && (status.crop_id || status.crop_name)) {
 
-                            const statusCrop =
-                                crops.find(
-                                    crop =>
-                                        Number(crop.id) ===
-                                        Number(status.crop_id)
-                                );
+                            const statusCrop = crops.find(crop =>
+                                (status.crop_id && Number(crop.id) === Number(status.crop_id)) ||
+                                (status.crop_name && String(crop.crop_name).toLowerCase() === String(status.crop_name).toLowerCase())
+                            );
 
                             if (statusCrop) {
-                                activeCrop = statusCrop;
+                                activeCrop = {
+                                    ...statusCrop,
+                                    quantity: status.booking_quantity ?? status.quantity ?? statusCrop.quantity
+                                };
                             }
                         }
                     }
