@@ -707,8 +707,7 @@
 
                 option.value = crop.id;
 
-                option.textContent =
-                    `${crop.crop_name} — ${Number(crop.quantity).toFixed(2)} ${crop.unit || "kg"}`;
+                option.textContent = crop.crop_name;
 
                 select.appendChild(option);
 
