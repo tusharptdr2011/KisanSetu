@@ -8,11 +8,16 @@
     <title>Kisan Setu — Smart Farmer Procurement</title>
 
     <style>
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: Arial, Helvetica, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
@@ -65,7 +70,7 @@
 
         .nav-links {
             display: flex;
-            gap: 32px;
+            gap: 25px;
             list-style: none;
         }
 
@@ -80,14 +85,77 @@
             color: #147344;
         }
 
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ================= LANGUAGE ================= */
+
+        .language-selector {
+            position: relative;
+        }
+
+        .language-btn {
+            background: white;
+            color: #17623d;
+            border: 1px solid #17623d;
+            padding: 10px 13px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .language-btn:hover {
+            background: #eaf6ee;
+        }
+
+        .language-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 47px;
+            background: white;
+            min-width: 145px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            border: 1px solid #e2ece6;
+            overflow: hidden;
+            z-index: 200;
+        }
+
+        .language-menu.show {
+            display: block;
+        }
+
+        .language-menu button {
+            width: 100%;
+            padding: 12px 15px;
+            background: white;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            color: #31483c;
+            font-size: 13px;
+        }
+
+        .language-menu button:hover {
+            background: #e7f5eb;
+            color: #17623d;
+        }
+
+        /* ================= BUTTONS ================= */
+
         .nav-buttons {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .btn {
             border: none;
-            padding: 11px 20px;
+            padding: 11px 17px;
             border-radius: 9px;
             cursor: pointer;
             font-weight: 600;
@@ -118,13 +186,14 @@
             align-items: center;
             position: relative;
             overflow: hidden;
+
             background:
                 linear-gradient(
                     90deg,
                     #f6faf7 0%,
                     #f6faf7 35%,
-                    rgba(246,250,247,0.92) 55%,
-                    rgba(226,241,231,0.45) 100%
+                    rgba(246, 250, 247, 0.92) 55%,
+                    rgba(226, 241, 231, 0.45) 100%
                 );
         }
 
@@ -190,7 +259,7 @@
             cursor: pointer;
         }
 
-        /* Decorative farming area */
+        /* ================= FARM DECORATION ================= */
 
         .farm-decoration {
             position: absolute;
@@ -205,6 +274,7 @@
         .sky {
             position: absolute;
             inset: 0;
+
             background: linear-gradient(
                 180deg,
                 #e8f2ec 0%,
@@ -316,7 +386,8 @@
             margin-bottom: 10px;
         }
 
-        .how h2 {
+        .how h2,
+        .features h2 {
             font-size: 35px;
             color: #153e2c;
             margin-bottom: 12px;
@@ -388,12 +459,6 @@
             text-align: center;
         }
 
-        .features h2 {
-            font-size: 35px;
-            margin-bottom: 12px;
-            color: #153e2c;
-        }
-
         .feature-grid {
             max-width: 1100px;
             margin: 50px auto 0;
@@ -418,6 +483,31 @@
             color: #718078;
             font-size: 13px;
             line-height: 1.7;
+        }
+
+        /* ================= ABOUT ================= */
+
+        .about {
+            padding: 85px 8%;
+            background: #f6faf7;
+            text-align: center;
+        }
+
+        .about-content {
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .about h2 {
+            font-size: 35px;
+            color: #153e2c;
+            margin-bottom: 18px;
+        }
+
+        .about p {
+            color: #718078;
+            font-size: 15px;
+            line-height: 1.8;
         }
 
         /* ================= CTA ================= */
@@ -460,6 +550,10 @@
             align-items: center;
         }
 
+        footer h3 {
+            margin-bottom: 6px;
+        }
+
         footer p {
             font-size: 12px;
             color: #a9bdb2;
@@ -467,10 +561,41 @@
 
         /* ================= MOBILE ================= */
 
+        @media (max-width: 1100px) {
+
+            .nav-links {
+                gap: 15px;
+            }
+
+            .nav-links a {
+                font-size: 12px;
+            }
+
+            .language-btn {
+                padding: 9px 10px;
+            }
+
+            .btn {
+                padding: 9px 11px;
+            }
+        }
+
         @media (max-width: 900px) {
+
+            nav {
+                height: auto;
+                min-height: 72px;
+                padding: 12px 5%;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
 
             .nav-links {
                 display: none;
+            }
+
+            .nav-right {
+                margin-left: auto;
             }
 
             .hero {
@@ -506,23 +631,37 @@
             footer {
                 flex-direction: column;
                 gap: 15px;
+                text-align: center;
             }
         }
 
         @media (max-width: 550px) {
 
             nav {
-                padding: 0 4%;
+                padding: 10px 4%;
             }
 
             .logo-text h2 {
                 font-size: 16px;
             }
 
+            .logo-text p {
+                font-size: 8px;
+            }
+
+            .nav-right {
+                gap: 5px;
+            }
+
+            .language-btn {
+                font-size: 10px;
+                padding: 8px 8px;
+            }
+
             .login-btn,
             .register-btn {
-                padding: 9px 12px;
-                font-size: 11px;
+                padding: 8px 9px;
+                font-size: 10px;
             }
 
             .hero h1 {
@@ -535,7 +674,7 @@
 
             .hero-buttons {
                 flex-direction: column;
-                width: 180px;
+                width: 190px;
             }
 
             .benefit-grid {
@@ -545,7 +684,15 @@
             .steps {
                 grid-template-columns: 1fr;
             }
+
+            .features,
+            .how,
+            .about {
+                padding-left: 6%;
+                padding-right: 6%;
+            }
         }
+
     </style>
 </head>
 
@@ -563,8 +710,13 @@
             </div>
 
             <div class="logo-text">
+
                 <h2>KISAN SETU</h2>
-                <p>Smart Procurement. Better Farmers.</p>
+
+                <p data-key="tagline">
+                    Smart Procurement. Better Farmers.
+                </p>
+
             </div>
 
         </div>
@@ -573,41 +725,88 @@
         <ul class="nav-links">
 
             <li>
-                <a href="#home">Home</a>
+                <a href="#home" data-key="home">Home</a>
             </li>
 
             <li>
-                <a href="#features">Features</a>
+                <a href="#features" data-key="features">Features</a>
             </li>
 
             <li>
-                <a href="#how">How It Works</a>
+                <a href="#how" data-key="how">How It Works</a>
             </li>
 
             <li>
-                <a href="#about">About</a>
+                <a href="#about" data-key="about">About</a>
             </li>
 
             <li>
-                <a href="#contact">Contact</a>
+                <a href="#contact" data-key="contact">Contact</a>
             </li>
 
         </ul>
 
 
-        <div class="nav-buttons">
+        <div class="nav-right">
 
-            <button
-                class="btn login-btn"
-                onclick="goToLogin()">
-                Login
-            </button>
+            <!-- LANGUAGE -->
 
-            <button
-                class="btn register-btn"
-                onclick="goToRegister()">
-                Register
-            </button>
+            <div class="language-selector">
+
+                <button
+                    class="language-btn"
+                    onclick="toggleLanguageMenu()">
+
+                    🌐 English ▾
+
+                </button>
+
+
+                <div
+                    class="language-menu"
+                    id="languageMenu">
+
+                    <button onclick="changeLanguage('en')">
+                        🇬🇧 English
+                    </button>
+
+                    <button onclick="changeLanguage('hi')">
+                        🇮🇳 हिंदी
+                    </button>
+
+                    <button onclick="changeLanguage('gu')">
+                        🇮🇳 ગુજરાતી
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- LOGIN / REGISTER -->
+
+            <div class="nav-buttons">
+
+                <button
+                    class="btn login-btn"
+                    onclick="goToLogin()"
+                    data-key="login">
+
+                    Login
+
+                </button>
+
+
+                <button
+                    class="btn register-btn"
+                    onclick="goToRegister()"
+                    data-key="register">
+
+                    Register
+
+                </button>
+
+            </div>
 
         </div>
 
@@ -616,21 +815,39 @@
 
     <!-- ================= HERO ================= -->
 
-    <section class="hero" id="home">
+    <section
+        class="hero"
+        id="home">
 
         <div class="hero-content">
 
-            <div class="tag">
+            <div
+                class="tag"
+                data-key="heroTag">
+
                 A DIGITAL BRIDGE FOR A STRONGER FARMING NATION
+
             </div>
 
+
             <h1>
-                Smart Procurement
+
+                <span data-key="heroTitle1">
+                    Smart Procurement
+                </span>
+
                 <br>
-                <span>for Every Farmer</span>
+
+                <span data-key="heroTitle2">
+                    for Every Farmer
+                </span>
+
             </h1>
 
-            <p class="hero-description">
+
+            <p
+                class="hero-description"
+                data-key="heroDescription">
 
                 Book your procurement slot, track your queue,
                 and know your procurement status without
@@ -643,7 +860,8 @@
 
                 <button
                     class="primary-btn"
-                    onclick="goToLogin()">
+                    onclick="goToLogin()"
+                    data-key="bookSlot">
 
                     Book a Slot →
 
@@ -652,7 +870,8 @@
 
                 <button
                     class="secondary-btn"
-                    onclick="goToLogin()">
+                    onclick="goToLogin()"
+                    data-key="trackQueue">
 
                     Track My Queue
 
@@ -663,7 +882,7 @@
         </div>
 
 
-        <!-- Decorative farming background -->
+        <!-- FARMING DECORATION -->
 
         <div class="farm-decoration">
 
@@ -697,383 +916,13 @@
                     📅
                 </div>
 
-                <h3>
+                <h3 data-key="benefit1Title">
                     Easy Slot Booking
                 </h3>
 
-                <p>
+                <p data-key="benefit1Text">
                     Choose your crop, centre and
                     convenient time slot.
                 </p>
 
             </div>
-
-
-            <div class="benefit-card">
-
-                <div class="benefit-icon">
-                    👥
-                </div>
-
-                <h3>
-                    Live Queue Tracking
-                </h3>
-
-                <p>
-                    Know your position in the
-                    procurement queue in real time.
-                </p>
-
-            </div>
-
-
-            <div class="benefit-card">
-
-                <div class="benefit-icon">
-                    📄
-                </div>
-
-                <h3>
-                    Procurement Status
-                </h3>
-
-                <p>
-                    Get updates at every step from
-                    booking to procurement.
-                </p>
-
-            </div>
-
-
-            <div class="benefit-card">
-
-                <div class="benefit-icon">
-                    🔔
-                </div>
-
-                <h3>
-                    Instant Notifications
-                </h3>
-
-                <p>
-                    Receive alerts about your slot,
-                    queue and payment.
-                </p>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ================= HOW IT WORKS ================= -->
-
-    <section class="how" id="how">
-
-        <div class="section-tag">
-            SIMPLE & TRANSPARENT
-        </div>
-
-        <h2>
-            How It Works
-        </h2>
-
-        <p class="section-subtitle">
-            A simple process for a smarter procurement experience
-        </p>
-
-
-        <div class="steps">
-
-
-            <div class="step">
-
-                <div class="step-number">1</div>
-
-                <div class="step-icon">
-                    👤
-                </div>
-
-                <h3>
-                    Register
-                </h3>
-
-                <p>
-                    Create your farmer account
-                </p>
-
-            </div>
-
-
-            <div class="step">
-
-                <div class="step-number">2</div>
-
-                <div class="step-icon">
-                    🌾
-                </div>
-
-                <h3>
-                    Add Crop
-                </h3>
-
-                <p>
-                    Enter crop and quantity details
-                </p>
-
-            </div>
-
-
-            <div class="step">
-
-                <div class="step-number">3</div>
-
-                <div class="step-icon">
-                    📅
-                </div>
-
-                <h3>
-                    Book Slot
-                </h3>
-
-                <p>
-                    Select centre and time slot
-                </p>
-
-            </div>
-
-
-            <div class="step">
-
-                <div class="step-number">4</div>
-
-                <div class="step-icon">
-                    🎫
-                </div>
-
-                <h3>
-                    Get Token
-                </h3>
-
-                <p>
-                    Track your queue position
-                </p>
-
-            </div>
-
-
-            <div class="step">
-
-                <div class="step-number">5</div>
-
-                <div class="step-icon">
-                    💰
-                </div>
-
-                <h3>
-                    Get Paid
-                </h3>
-
-                <p>
-                    Receive procurement payment
-                </p>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ================= FEATURES ================= -->
-
-    <section class="features" id="features">
-
-        <div class="section-tag">
-            POWERFUL FEATURES
-        </div>
-
-        <h2>
-            Everything Farmers Need
-        </h2>
-
-        <p class="section-subtitle">
-            One platform connecting farmers with procurement centres
-        </p>
-
-
-        <div class="feature-grid">
-
-
-            <div class="feature">
-
-                <div class="benefit-icon">
-                    🗓️
-                </div>
-
-                <h3>
-                    Smart Slot Booking
-                </h3>
-
-                <p>
-                    Farmers can select a procurement
-                    centre and available time slot before
-                    visiting the centre.
-                </p>
-
-            </div>
-
-
-            <div class="feature">
-
-                <div class="benefit-icon">
-                    🎫
-                </div>
-
-                <h3>
-                    Digital Token
-                </h3>
-
-                <p>
-                    Get a digital token number and avoid
-                    unnecessary waiting at procurement centres.
-                </p>
-
-            </div>
-
-
-            <div class="feature">
-
-                <div class="benefit-icon">
-                    📍
-                </div>
-
-                <h3>
-                    Live Queue
-                </h3>
-
-                <p>
-                    Farmers can see their queue position
-                    and estimated waiting time.
-                </p>
-
-            </div>
-
-
-            <div class="feature">
-
-                <div class="benefit-icon">
-                    🌾
-                </div>
-
-                <h3>
-                    Procurement Tracking
-                </h3>
-
-                <p>
-                    Track crop procurement from arrival
-                    to completion.
-                </p>
-
-            </div>
-
-
-            <div class="feature">
-
-                <div class="benefit-icon">
-                    💳
-                </div>
-
-                <h3>
-                    Payment Tracking
-                </h3>
-
-                <p>
-                    View payment amount, transaction ID
-                    and payment status.
-                </p>
-
-            </div>
-
-
-            <div class="feature">
-
-                <div class="benefit-icon">
-                    📊
-                </div>
-
-                <h3>
-                    Centre Dashboard
-                </h3>
-
-                <p>
-                    Procurement staff can manage queues,
-                    procurement and payments.
-                </p>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ================= CTA ================= -->
-
-    <section class="cta" id="about">
-
-        <h2>
-            Ready for Smarter Procurement?
-        </h2>
-
-        <p>
-            Join Kisan Setu and make your procurement
-            experience faster and easier.
-        </p>
-
-        <button onclick="goToRegister()">
-            Create Farmer Account →
-        </button>
-
-    </section>
-
-
-    <!-- ================= FOOTER ================= -->
-
-    <footer id="contact">
-
-        <p>
-            © 2026 Kisan Setu. Smart Procurement. Better Farmers.
-        </p>
-
-        <p>
-            Built for Smart India Hackathon 2026 🌾
-        </p>
-
-    </footer>
-
-
-    <!-- ================= JAVASCRIPT ================= -->
-
-    <script>
-
-        function goToLogin() {
-
-            window.location.href = "login.html";
-
-        }
-
-
-        function goToRegister() {
-
-            window.location.href = "register.html";
-
-        }
-
-    </script>
-
-
-</body>
-
-</html>
