@@ -1,18 +1,19 @@
 const mysql = require("mysql2");
 
-const db = mysql.createPool({
-    host: process.env.MYSQLHOST,
-    port: Number(process.env.MYSQLPORT || 3306),
-    user: process.env.MYSQLUSER,
-    password: process.env.MYSQLPASSWORD,
-    database: process.env.MYSQLDATABASE,
+const db = mysql.createConnection({
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT) || 4000,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME || "KisanSetu",
 
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+    // TiDB Cloud requires TLS for the public endpoint
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
-db.getConnection((err, connection) => {
+db.connect((err) => {
     if (err) {
         console.log("❌ MySQL connection failed!");
         console.log(err.message);
@@ -20,7 +21,6 @@ db.getConnection((err, connection) => {
     }
 
     console.log("MySQL Connected Successfully ✅");
-    connection.release();
 });
 
 module.exports = db;
