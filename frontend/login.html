@@ -2,805 +2,1541 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Kisan Setu | Farmer Login</title>
+    <title>Kisan Setu - Farmer Dashboard</title>
 
     <style>
+
+        :root {
+            --green-900: #0b3d24;
+            --green-800: #0f5b35;
+            --green-700: #176b3a;
+            --green-600: #21834a;
+            --green-100: #eaf7ee;
+            --green-50: #f5fbf7;
+            --ink: #173126;
+            --muted: #6a7a71;
+            --border: rgba(23, 61, 43, 0.10);
+            --white: #ffffff;
+            --shadow: 0 12px 35px rgba(20, 62, 40, 0.08);
+            --shadow-hover: 0 18px 42px rgba(20, 62, 40, 0.13);
+        }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
         }
+
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f3f8f5;
             min-height: 100vh;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            color: #14231d;
-        }
-
-        .login-container {
-            width: 900px;
-            min-height: 550px;
-
-            background: white;
-
-            display: grid;
-            grid-template-columns: 45% 55%;
-
-            border-radius: 18px;
-            overflow: hidden;
-
-            box-shadow:
-                0 15px 40px rgba(0, 70, 45, 0.12);
-        }
-
-        /* LEFT SIDE */
-
-        .login-image {
-
             background:
-                linear-gradient(
-                    rgba(0, 70, 45, 0.35),
-                    rgba(0, 60, 40, 0.45)
-                ),
-                url("https://images.pexels.com/photos/30269788/pexels-photo-30269788.jpeg");
-
-            background-size: cover;
-            background-position: center;
-
-            position: relative;
+                radial-gradient(circle at 10% 0%, rgba(33,131,74,.10), transparent 28%),
+                radial-gradient(circle at 95% 8%, rgba(121,180,142,.12), transparent 25%),
+                #f4f8f5;
+            color: var(--ink);
         }
 
-        .overlay {
-
-            height: 100%;
-            padding: 35px;
-
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(11, 61, 36, .96);
+            backdrop-filter: blur(14px);
             color: white;
+            padding: 16px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 22px rgba(8, 45, 26, .16);
         }
 
-        .brand {
-
-            font-size: 23px;
+        .logo {
+            font-size: 25px;
             font-weight: 800;
+            letter-spacing: -.4px;
         }
 
-        .image-content {
-            margin-bottom: 25px;
-        }
-
-        .image-content h1 {
-
-            font-size: 32px;
-            line-height: 1.2;
-
-            margin-bottom: 15px;
-        }
-
-        .image-content p {
-
-            max-width: 320px;
-
-            font-size: 15px;
-            line-height: 1.6;
-        }
-
-        /* RIGHT SIDE */
-
-        .login-section {
-
-            padding: 50px;
-
+        .nav-right {
             display: flex;
             align-items: center;
+            gap: 18px;
         }
 
-        .login-form {
-            width: 100%;
-        }
-
-        .login-form h2 {
-
-            font-size: 29px;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-
-            color: #727d78;
-            font-size: 14px;
-
-            margin-bottom: 30px;
-        }
-
-        /* INPUT */
-
-        .input-group {
-            margin-bottom: 19px;
-        }
-
-        .input-group label {
-
-            display: block;
-
-            font-size: 14px;
+        .nav-right span {
             font-weight: 600;
-
-            margin-bottom: 8px;
+            color: #eef8f1;
         }
 
-        .input-group input {
-
-            width: 100%;
-            height: 48px;
-
-            border: 1px solid #d7e0db;
-            border-radius: 8px;
-
-            padding: 0 14px;
-
-            font-size: 14px;
-
-            outline: none;
+        .logout {
+            background: white;
+            color: var(--green-800);
+            border: none;
+            padding: 10px 17px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 800;
+            transition: .2s ease;
         }
 
-        .input-group input:focus {
-
-            border-color: #087747;
-
-            box-shadow:
-                0 0 0 3px rgba(8, 119, 71, 0.08);
+        .logout:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 7px 18px rgba(0,0,0,.15);
         }
 
-        /* PASSWORD */
+        .container {
+            width: 90%;
+            max-width: 1240px;
+            margin: 32px auto 50px;
+        }
 
-        .password-box {
+        .welcome {
             position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ffffff 0%, #eef9f1 100%);
+            padding: 34px;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
         }
 
-        .password-box input {
-            padding-right: 65px;
-        }
-
-        .show-password {
-
+        .welcome::after {
+            content: "🌾";
             position: absolute;
-
-            right: 12px;
-            top: 50%;
-
-            transform: translateY(-50%);
-
-            border: none;
-            background: transparent;
-
-            color: #087747;
-
-            font-size: 12px;
-            font-weight: 600;
-
-            cursor: pointer;
+            right: 35px;
+            top: 15px;
+            font-size: 82px;
+            opacity: .11;
+            transform: rotate(-10deg);
         }
 
-        /* LOGIN BUTTON */
+        .welcome h1 {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 9px;
+            font-size: clamp(28px, 4vw, 40px);
+            letter-spacing: -.8px;
+            color: var(--green-900);
+        }
 
-        .login-btn {
-
-            width: 100%;
-            height: 48px;
-
-            border: none;
-            border-radius: 8px;
-
-            background: #087747;
-            color: white;
-
+        .welcome p {
+            position: relative;
+            z-index: 1;
+            color: var(--muted);
             font-size: 15px;
-            font-weight: 700;
+        }
 
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            position: relative;
+            overflow: hidden;
+            background: var(--white);
+            padding: 23px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            transition: transform .22s ease, box-shadow .22s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: var(--green-100);
+            right: -35px;
+            top: -35px;
+        }
+
+        .card h3 {
+            position: relative;
+            margin-bottom: 12px;
+            color: var(--green-700);
+            font-size: 16px;
+        }
+
+        .big {
+            position: relative;
+            font-size: 30px;
+            font-weight: 850;
+            color: var(--green-900);
+            margin-bottom: 5px;
+        }
+
+        .card p {
+            position: relative;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .section {
+            background: rgba(255,255,255,.96);
+            padding: 27px;
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .section h2 {
+            margin-bottom: 19px;
+            color: var(--green-900);
+            font-size: 23px;
+            letter-spacing: -.3px;
+        }
+
+        .centre-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .centre {
+            position: relative;
+            background: linear-gradient(180deg, #ffffff, #f6fbf7);
+            border: 1px solid rgba(23,107,58,.13);
+            padding: 20px;
+            border-radius: 17px;
+            transition: .2s ease;
+        }
+
+        .centre:hover {
+            border-color: rgba(23,107,58,.32);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(20,62,40,.08);
+        }
+
+        .centre h3 {
+            margin-bottom: 9px;
+            color: var(--green-900);
+            font-size: 17px;
+        }
+
+        .centre p {
+            color: var(--muted);
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .centre button {
+            margin-top: 13px;
+            width: 100%;
+            background: linear-gradient(135deg, var(--green-700), var(--green-600));
+            color: white;
+            border: none;
+            padding: 11px 15px;
+            border-radius: 10px;
             cursor: pointer;
-
-            transition: 0.2s;
+            font-weight: 800;
+            transition: .2s ease;
         }
 
-        .login-btn:hover {
-            background: #065d39;
+        .centre button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(23,107,58,.22);
         }
 
-        .login-btn:disabled {
-
-            background: #999;
-            cursor: not-allowed;
+        .queue-box {
+            background: linear-gradient(135deg, #effaf2, #e6f5eb);
+            border: 1px solid rgba(23,107,58,.12);
+            padding: 22px;
+            border-radius: 16px;
         }
 
-        /* REGISTER */
-
-        .register {
-
-            text-align: center;
-
-            margin-top: 22px;
-
-            font-size: 13px;
-
-            color: #68736e;
+        .queue-number {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--green-700);
+            margin: 8px 0 17px;
+            letter-spacing: 1px;
         }
 
-        .register a {
-
-            color: #087747;
-
-            text-decoration: none;
-
-            font-weight: 700;
-
-            margin-left: 4px;
+        .queue-box p {
+            margin: 9px 0;
+            color: #40564a;
         }
 
-        /* MESSAGE */
-
-        #message {
-
-            margin-top: 18px;
-
-            padding: 12px;
-
-            border-radius: 8px;
-
-            display: none;
-
-            font-size: 13px;
-
-            line-height: 1.5;
+        .queue-box strong {
+            color: var(--green-900);
         }
 
-        #message.success {
-
-            display: block;
-
-            background: #e5f7e9;
-
-            color: #176b3a;
+        .status {
+            padding: 20px;
+            border-radius: 15px;
+            background: #f6f8f7;
+            border: 1px solid var(--border);
+            margin-top: 10px;
+            line-height: 1.75;
         }
 
-        #message.error {
-
-            display: block;
-
-            background: #ffe8e8;
-
-            color: #c62828;
+        .success {
+            background: #e6f7ea;
+            color: var(--green-700);
         }
 
-        /* MOBILE */
+        .loading {
+            color: var(--muted);
+        }
 
-        @media (max-width: 750px) {
-
-            body {
-                padding: 20px;
-            }
-
-            .login-container {
-
-                width: 100%;
-                max-width: 450px;
-
+        @media(max-width: 900px) {
+            .cards,
+            .centre-grid {
                 grid-template-columns: 1fr;
             }
 
-            .login-image {
-                display: none;
+            .container { width: 94%; }
+
+            .welcome { padding: 27px; }
+
+            .section { padding: 22px; }
+        }
+
+        @media(max-width: 560px) {
+            nav { padding: 14px 4%; }
+
+            .logo { font-size: 21px; }
+
+            .nav-right span { display: none; }
+
+            .container {
+                width: 94%;
+                margin-top: 20px;
             }
 
-            .login-section {
-                padding: 35px 28px;
+            .welcome h1 { font-size: 28px; }
+
+            .welcome::after { font-size: 55px; right: 15px; }
+
+            .section h2 { font-size: 20px; }
+        }
+
+    
+        /* ================================
+           ADD CROP BUTTON & MODAL
+        ================================= */
+
+        .crop-add-btn {
+            margin-top: 13px;
+            border: none;
+            background: linear-gradient(135deg, var(--green-700), var(--green-600));
+            color: #fff;
+            padding: 10px 17px;
+            border-radius: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .crop-add-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(23,107,58,.22);
+        }
+
+        .crop-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: rgba(7, 35, 22, .58);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .crop-modal.show {
+            display: flex;
+        }
+
+        .crop-modal-box {
+            width: min(100%, 460px);
+            max-height: 90vh;
+            overflow-y: auto;
+            background: #fff;
+            border-radius: 22px;
+            padding: 25px;
+            box-shadow: 0 25px 70px rgba(0,0,0,.28);
+            border: 1px solid var(--border);
+        }
+
+        .crop-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .crop-modal-header h2 {
+            color: var(--green-900);
+            font-size: 23px;
+            margin: 0;
+        }
+
+        .crop-close {
+            flex: 0 0 auto;
+            width: 38px;
+            height: 38px;
+            border: none;
+            border-radius: 50%;
+            background: #eef7f0;
+            color: var(--green-900);
+            font-size: 23px;
+            line-height: 1;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .crop-form-group {
+            margin-bottom: 15px;
+        }
+
+        .crop-form-group label {
+            display: block;
+            margin-bottom: 7px;
+            color: var(--green-900);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .crop-form-group input,
+        .crop-form-group select {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid #cdded2;
+            border-radius: 10px;
+            outline: none;
+            font-size: 15px;
+            color: var(--ink);
+            background: #fbfefc;
+        }
+
+        .crop-form-group input:focus,
+        .crop-form-group select:focus {
+            border-color: var(--green-600);
+            box-shadow: 0 0 0 3px rgba(33,131,74,.10);
+        }
+
+        .crop-save-btn {
+            width: 100%;
+            margin-top: 5px;
+            border: none;
+            padding: 13px;
+            border-radius: 11px;
+            background: linear-gradient(135deg, var(--green-700), var(--green-600));
+            color: #fff;
+            font-weight: 850;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .crop-save-btn:disabled {
+            opacity: .65;
+            cursor: not-allowed;
+        }
+
+        .crop-form-message {
+            margin-top: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .crop-form-message.success {
+            display: block;
+            background: #e7f8eb;
+            color: var(--green-700);
+        }
+
+        .crop-form-message.error {
+            display: block;
+            background: #fde9e9;
+            color: #b42318;
+        }
+
+        @media (max-width: 600px) {
+            .crop-modal {
+                padding: 14px;
             }
 
-            .login-form h2 {
-                text-align: center;
+            .crop-modal-box {
+                border-radius: 19px;
+                padding: 20px;
+                max-height: 88vh;
             }
 
-            .subtitle {
-                text-align: center;
+            .crop-modal-header h2 {
+                font-size: 20px;
             }
         }
 
+
+        /* ================= LANGUAGE SELECTOR ================= */
+        .language-select {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            border: 1px solid #087747;
+            background: white;
+            color: #087747;
+            padding: 9px 11px;
+            border-radius: 9px;
+            font-weight: 700;
+            cursor: pointer;
+            outline: none;
+            font-size: 12px;
+            z-index: 10;
+        }
+        .language-select option {
+            color: #14231d;
+            background: white;
+        }
+
     </style>
-
 </head>
-
 
 <body>
 
+    <!-- NAVBAR -->
+    <nav>
 
-<div class="login-container">
+        <div class="logo">
+            🌾 Kisan Setu
+        </div>
+
+        <div class="nav-right">
+            <span id="navName">Farmer</span>
+
+            <button class="logout" onclick="logout()">
+                Logout
+            </button>
+        </div>
+
+    </nav>
 
 
-    <!-- LEFT SIDE -->
+    <!-- MAIN -->
+    <div class="container">
 
-    <div class="login-image">
+        <!-- WELCOME -->
+        <div class="welcome">
 
-        <div class="overlay">
+            <h1>
+                Welcome,
+                <span id="farmerName">Farmer</span>
+                👋
+            </h1>
 
-            <div class="brand">
-                🌾 KISAN SETU
+            <p>
+                Manage your crops, book procurement slots and track your procurement journey.
+            </p>
+
+        </div>
+
+
+        <!-- SUMMARY CARDS -->
+        <div class="cards">
+
+            <!-- CROP -->
+            <div class="card">
+
+                <h3>🌾 My Crop</h3>
+
+                <div class="big" id="cropName">
+                    Loading...
+                </div>
+
+                <p id="cropQuantity">
+                    Please wait...
+                </p>
+
+                <button
+                    id="addCropBtn"
+                    class="crop-add-btn"
+                    onclick="openCropModal()"
+                    style="display:none;"
+                >
+                    ＋ Add Crop
+                </button>
+
             </div>
 
-            <div class="image-content">
 
-                <h1>
-                    Smart Procurement.<br>
-                    Better Farming.
-                </h1>
+            <!-- TOKEN -->
+            <div class="card">
 
-                <p>
-                    Book your procurement slot,
-                    track your queue and manage
-                    your procurement easily.
+                <h3>🎟️ My Token</h3>
+
+                <div class="big" id="tokenNumber">
+                    --
+                </div>
+
+                <p id="tokenStatus">
+                    Checking booking...
+                </p>
+
+            </div>
+
+
+            <!-- PAYMENT -->
+            <div class="card">
+
+                <h3>💰 Payment</h3>
+
+                <div class="big" id="paymentAmount">
+                    ₹0
+                </div>
+
+                <p id="paymentStatus">
+                    No payment yet
                 </p>
 
             </div>
 
         </div>
 
-    </div>
 
-
-    <!-- RIGHT SIDE -->
-
-    <div class="login-section">
-
-        <div class="login-form">
-
+        <!-- PROCUREMENT CENTRES -->
+        <div class="section">
 
             <h2>
-                Welcome Back!
+                📍 Procurement Centres
             </h2>
 
-            <p class="subtitle">
-                Login to manage your procurement
-            </p>
-
-
-            <!-- LOGIN FORM -->
-
-            <form id="loginForm">
-
-
-                <!-- MOBILE -->
-
-                <div class="input-group">
-
-                    <label for="mobile">
-                        Mobile Number
-                    </label>
-
-                    <input
-                        type="tel"
-                        id="mobile"
-                        placeholder="Enter 10-digit mobile number"
-                        maxlength="10"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- PASSWORD -->
-
-                <div class="input-group">
-
-                    <label for="password">
-                        Password
-                    </label>
-
-                    <div class="password-box">
-
-                        <input
-                            type="password"
-                            id="password"
-                            placeholder="Enter your password"
-                            required
-                        >
-
-                        <button
-                            type="button"
-                            class="show-password"
-                            id="showPassword"
-                        >
-                            Show
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <!-- LOGIN BUTTON -->
-
-                <button
-                    type="submit"
-                    class="login-btn"
-                    id="loginButton"
-                >
-                    Login →
-                </button>
-
-
-            </form>
-
-
-            <!-- MESSAGE -->
-
-            <div id="message"></div>
-
-
-            <!-- REGISTER -->
-
-            <div class="register">
-
-                Don't have an account?
-
-                <a href="register.html">
-                    Register as Farmer
-                </a>
-
+            <div
+                class="centre-grid"
+                id="centresContainer"
+            >
+                <p class="loading">
+                    Loading centres...
+                </p>
             </div>
 
+        </div>
+
+
+        <!-- QUEUE -->
+        <div class="section">
+
+            <h2>
+                ⏳ Live Queue
+            </h2>
+
+            <div
+                class="queue-box"
+                id="queueBox"
+            >
+                <p class="loading">
+                    Checking your queue...
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- PROCUREMENT STATUS -->
+        <div class="section">
+
+            <h2>
+                📦 Procurement Status
+            </h2>
+
+            <div
+                class="status"
+                id="procurementStatus"
+            >
+                Loading status...
+            </div>
 
         </div>
 
     </div>
 
-</div>
 
+
+    <!-- ADD CROP MODAL -->
+    <div class="crop-modal" id="cropModal">
+        <div class="crop-modal-box">
+
+            <div class="crop-modal-header">
+                <h2>🌾 Add Your Crop</h2>
+                <button
+                    class="crop-close"
+                    type="button"
+                    onclick="closeCropModal()"
+                >
+                    ×
+                </button>
+            </div>
+
+            <form id="cropForm" onsubmit="saveCrop(event)">
+
+                <div class="crop-form-group">
+                    <label for="cropSelect">Crop Name</label>
+                    <select id="cropSelect" required>
+                        <option value="">Select crop</option>
+                        <option value="Wheat">Wheat</option>
+                        <option value="Rice">Rice</option>
+                        <option value="Soybean">Soybean</option>
+                        <option value="Maize">Maize</option>
+                        <option value="Cotton">Cotton</option>
+                        <option value="Gram">Gram</option>
+                        <option value="Mustard">Mustard</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="crop-form-group" id="otherCropGroup" style="display:none;">
+                    <label for="otherCropName">Other Crop Name</label>
+                    <input
+                        type="text"
+                        id="otherCropName"
+                        placeholder="Enter crop name"
+                    >
+                </div>
+
+                <div class="crop-form-group">
+                    <label for="cropVariety">Crop Variety</label>
+                    <select id="cropVariety" required>
+                        <option value="">Select variety</option>
+                    </select>
+                </div>
+
+                <div class="crop-form-group" id="otherVarietyGroup" style="display:none;">
+                    <label for="otherVarietyName">Other Variety</label>
+                    <input type="text" id="otherVarietyName" placeholder="Enter variety">
+                </div>
+
+                <div class="crop-form-group">
+                    <label for="cropInputQuantity">Quantity</label>
+                    <input
+                        type="number"
+                        id="cropInputQuantity"
+                        min="0.01"
+                        step="0.01"
+                        placeholder="e.g. 500"
+                        required
+                    >
+                </div>
+
+                <div class="crop-form-group">
+                    <label for="cropUnit">Unit</label>
+                    <select id="cropUnit">
+                        <option value="kg">Kilogram (kg)</option>
+                        <option value="quintal">Quintal</option>
+                        <option value="ton">Ton</option>
+                    </select>
+                </div>
+
+                <button
+                    class="crop-save-btn"
+                    id="cropSaveBtn"
+                    type="submit"
+                >
+                    💾 Save Crop
+                </button>
+
+                <div
+                    class="crop-form-message"
+                    id="cropFormMessage"
+                ></div>
+
+            </form>
+        </div>
+    </div>
 
 
 <script>
 
+    // =====================================
+    // API
+    // =====================================
 
-    // ==========================================
-    // BACKEND URL
-    // ==========================================
-
-    const API =
-    "https://talented-smile-production-e2fa.up.railway.app";
-
-    // ==========================================
-    // ELEMENTS
-    // ==========================================
-
-    const form =
-        document.getElementById(
-            "loginForm"
-        );
+    const API = "https://talented-smile-production-e2fa.up.railway.app";
 
 
-    const mobile =
-        document.getElementById(
-            "mobile"
-        );
+    // =====================================
+    // CHECK LOGIN
+    // =====================================
+
+    const farmerData = localStorage.getItem("farmer");
+
+    if (!farmerData) {
+
+        alert("Please login first.");
+
+        window.location.href = "login.html";
+
+    }
+
+    const farmer = JSON.parse(farmerData);
+
+    const farmerId = farmer.id;
 
 
-    const password =
-        document.getElementById(
-            "password"
-        );
+    // =====================================
+    // SHOW FARMER NAME
+    // =====================================
+
+    document.getElementById("farmerName").textContent =
+        farmer.name;
+
+    document.getElementById("navName").textContent =
+        farmer.name;
 
 
-    const loginButton =
-        document.getElementById(
-            "loginButton"
-        );
+    // =====================================
+    // ADD CROP MODAL
+    // =====================================
 
+    function openCropModal() {
+        document.getElementById("cropModal").classList.add("show");
+        document.getElementById("cropFormMessage").className =
+            "crop-form-message";
+        document.getElementById("cropFormMessage").textContent = "";
+    }
 
-    const message =
-        document.getElementById(
-            "message"
-        );
+    function closeCropModal() {
+        document.getElementById("cropModal").classList.remove("show");
+    }
 
+    const cropVarieties = {
+        Wheat: ["Lokwan", "Sharbati", "Durum", "Other"],
+        Rice: ["Basmati 1121", "IR64", "Pusa Basmati 1509", "Other"],
+        Soybean: ["JS 335", "JS 9560", "NRC 37", "Other"],
+        Maize: ["Pioneer 3396", "HQPM 1", "DHM 117", "Other"],
+        Cotton: ["Bt Cotton", "Desi Cotton", "Other"],
+        Gram: ["JG 11", "JG 14", "JG 16", "Other"],
+        Mustard: ["Pusa Bold", "Varuna", "Giriraj", "Other"],
+        Other: ["Other"]
+    };
 
-    const showPassword =
-        document.getElementById(
-            "showPassword"
-        );
+    function loadCropVarieties() {
+        const crop = document.getElementById("cropSelect").value;
+        const select = document.getElementById("cropVariety");
+        select.innerHTML = '<option value="">Select variety</option>';
 
+        (cropVarieties[crop] || []).forEach(variety => {
+            const option = document.createElement("option");
+            option.value = variety;
+            option.textContent = variety;
+            select.appendChild(option);
+        });
 
-    // ==========================================
-    // SHOW / HIDE PASSWORD
-    // ==========================================
+        document.getElementById("otherVarietyGroup").style.display = "none";
+        document.getElementById("otherVarietyName").required = false;
+        document.getElementById("otherVarietyName").value = "";
+    }
 
-    showPassword.addEventListener(
-        "click",
-        function () {
+    document.getElementById("cropSelect").addEventListener("change", function () {
+        const otherGroup = document.getElementById("otherCropGroup");
+        const otherInput = document.getElementById("otherCropName");
 
-            if (
-                password.type === "password"
-            ) {
-
-                password.type = "text";
-
-                showPassword.textContent =
-                    "Hide";
-
-            } else {
-
-                password.type =
-                    "password";
-
-                showPassword.textContent =
-                    "Show";
-            }
-
+        if (this.value === "Other") {
+            otherGroup.style.display = "block";
+            otherInput.required = true;
+        } else {
+            otherGroup.style.display = "none";
+            otherInput.required = false;
+            otherInput.value = "";
         }
-    );
 
+        loadCropVarieties();
+    });
 
-    // ==========================================
-    // ONLY NUMBERS IN MOBILE
-    // ==========================================
+    document.getElementById("cropVariety").addEventListener("change", function () {
+        const group = document.getElementById("otherVarietyGroup");
+        const input = document.getElementById("otherVarietyName");
 
-    mobile.addEventListener(
-        "input",
-        function () {
-
-            mobile.value =
-                mobile.value.replace(
-                    /[^0-9]/g,
-                    ""
-                );
-
+        if (this.value === "Other") {
+            group.style.display = "block";
+            input.required = true;
+        } else {
+            group.style.display = "none";
+            input.required = false;
+            input.value = "";
         }
-    );
+    });
 
+    document.getElementById("cropModal").addEventListener("click", function (event) {
+        if (event.target === this) {
+            closeCropModal();
+        }
+    });
 
-    // ==========================================
-    // LOGIN
-    // ==========================================
+    async function saveCrop(event) {
+        event.preventDefault();
 
-    form.addEventListener(
-        "submit",
-        async function (event) {
+        const selectValue =
+            document.getElementById("cropSelect").value;
 
-            event.preventDefault();
+        const cropName =
+            selectValue === "Other"
+                ? document.getElementById("otherCropName").value.trim()
+                : selectValue;
 
+        const varietySelectValue =
+            document.getElementById("cropVariety").value;
 
-            const mobileValue =
-                mobile.value.trim();
+        const cropVariety =
+            varietySelectValue === "Other"
+                ? document.getElementById("otherVarietyName").value.trim()
+                : varietySelectValue;
 
+        const quantity =
+            Number(document.getElementById("cropInputQuantity").value);
 
-            const passwordValue =
-                password.value.trim();
+        const unit =
+            document.getElementById("cropUnit").value;
 
+        const message =
+            document.getElementById("cropFormMessage");
 
-            // ==============================
-            // VALIDATION
-            // ==============================
+        const button =
+            document.getElementById("cropSaveBtn");
 
-            if (
-                !/^[0-9]{10}$/.test(
-                    mobileValue
-                )
-            ) {
+        if (!cropName) {
+            message.className = "crop-form-message error";
+            message.textContent = "Please select or enter a crop name.";
+            return;
+        }
 
-                showMessage(
-                    "Please enter a valid 10-digit mobile number.",
-                    "error"
-                );
+        if (!cropVariety) {
+            message.className = "crop-form-message error";
+            message.textContent = "Please select or enter a crop variety.";
+            return;
+        }
 
-                return;
+        if (!quantity || quantity <= 0) {
+            message.className = "crop-form-message error";
+            message.textContent = "Please enter a valid quantity.";
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = "Saving...";
+
+        try {
+            const response = await fetch(
+                `${API}/api/crops`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        farmer_id: farmerId,
+                        crop_name: cropName,
+                        crop_variety: cropVariety,
+                        quantity: quantity,
+                        unit: unit
+                    })
+                }
+            );
+
+            let data = {};
+            try {
+                data = await response.json();
+            } catch {
+                data = {};
             }
 
-
-            if (
-                passwordValue === ""
-            ) {
-
-                showMessage(
-                    "Please enter your password.",
-                    "error"
+            if (!response.ok) {
+                throw new Error(
+                    data.message || "Failed to add crop."
                 );
-
-                return;
             }
 
+            message.className = "crop-form-message success";
+            message.textContent = "✅ Crop added successfully!";
 
-            // ==============================
-            // LOADING
-            // ==============================
+            document.getElementById("cropForm").reset();
+            document.getElementById("otherCropGroup").style.display = "none";
+            document.getElementById("otherVarietyGroup").style.display = "none";
+            document.getElementById("otherVarietyName").required = false;
+            document.getElementById("cropVariety").innerHTML =
+                '<option value="">Select variety</option>';
 
-            loginButton.disabled =
-                true;
+            await loadCrops();
 
-            loginButton.textContent =
-                "Logging in...";
+            setTimeout(() => {
+                closeCropModal();
+            }, 900);
+
+        } catch (error) {
+            console.error("Add crop error:", error);
+
+            message.className = "crop-form-message error";
+            message.textContent =
+                "❌ " + (error.message || "Unable to add crop.");
+        } finally {
+            button.disabled = false;
+            button.textContent = "💾 Save Crop";
+        }
+    }
 
 
-            hideMessage();
+    // =====================================
+    // LOAD CROPS
+    // =====================================
 
+    async function loadCrops() {
+
+        try {
+
+            const response = await fetch(
+                `${API}/api/crops/${farmerId}`
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to load crops");
+            }
+
+            const crops = await response.json();
+
+            // --------------------------------------------------
+            // IMPORTANT:
+            // If the farmer has an active booking, My Crop must
+            // show the crop belonging to that booking.
+            // Do NOT simply use crops[0].
+            // --------------------------------------------------
+
+            let activeCrop = null;
 
             try {
 
+                const queueResponse = await fetch(
+                    `${API}/api/queue/${farmerId}`
+                );
 
-                // ==========================
-                // CALL BACKEND
-                // ==========================
+                if (queueResponse.ok) {
 
-                const response =
-                    await fetch(
-                        `${API}/api/login`,
-                        {
+                    const queueData =
+                        await queueResponse.json();
 
-                            method: "POST",
+                    // Backend may return one object or an array.
+                    const queueItem =
+                        Array.isArray(queueData)
+                            ? queueData[0]
+                            : queueData;
 
-                            headers: {
+                    if (queueItem && (queueItem.crop_id || queueItem.crop_name)) {
 
-                                "Content-Type":
-                                    "application/json"
+                        activeCrop = crops.find(crop =>
+                            (queueItem.crop_id && Number(crop.id) === Number(queueItem.crop_id)) ||
+                            (queueItem.crop_name && String(crop.crop_name).toLowerCase() === String(queueItem.crop_name).toLowerCase())
+                        ) || {
+                            id: queueItem.crop_id || null,
+                            crop_name: queueItem.crop_name || "Selected Crop",
+                            quantity: queueItem.booking_quantity ?? queueItem.crop_quantity ?? 0,
+                            unit: queueItem.unit || "kg"
+                        };
 
-                            },
-
-                            body:
-                                JSON.stringify({
-
-                                    mobile:
-                                        mobileValue,
-
-                                    password:
-                                        passwordValue
-
-                                })
-
+                        // The queue API returns the quantity booked for this slot.
+                        // <span data-i18n="show">Show</span> that quantity on the dashboard instead of the crop's full stock.
+                        if (queueItem.booking_quantity !== undefined && queueItem.booking_quantity !== null) {
+                            activeCrop = { ...activeCrop, quantity: queueItem.booking_quantity };
                         }
-                    );
-
-
-                const data =
-                    await response.json();
-
-
-                // ==========================
-                // LOGIN FAILED
-                // ==========================
-
-                if (!response.ok) {
-
-                    throw new Error(
-                        data.message ||
-                        "Invalid mobile number or password."
-                    );
-
+                    }
                 }
 
+            } catch (queueError) {
 
-                // ==========================
-                // SAVE FARMER
-                // ==========================
-
-                localStorage.setItem(
-                    "farmer",
-                    JSON.stringify(
-                        data.farmer
-                    )
+                console.log(
+                    "Active booking unavailable:",
+                    queueError
                 );
+            }
 
 
-                localStorage.setItem(
-                    "kisanSetuLoggedIn",
-                    "true"
-                );
+            // --------------------------------------------------
+            // If no active queue exists, check latest status.
+            // This is useful immediately after a booking if the
+            // queue endpoint is temporarily unavailable.
+            // --------------------------------------------------
+
+            if (!activeCrop) {
+
+                try {
+
+                    const statusResponse =
+                        await fetch(
+                            `${API}/api/status/${farmerId}`
+                        );
+
+                    if (statusResponse.ok) {
+
+                        const status =
+                            await statusResponse.json();
+
+                        // Only use status crop when there is an
+                        // actual current booking/procurement record.
+                        if (status && (status.crop_id || status.crop_name)) {
+
+                            const statusCrop = crops.find(crop =>
+                                (status.crop_id && Number(crop.id) === Number(status.crop_id)) ||
+                                (status.crop_name && String(crop.crop_name).toLowerCase() === String(status.crop_name).toLowerCase())
+                            );
+
+                            if (statusCrop) {
+                                activeCrop = {
+                                    ...statusCrop,
+                                    quantity: status.booking_quantity ?? status.quantity ?? statusCrop.quantity
+                                };
+                            }
+                        }
+                    }
+
+                } catch (statusError) {
+
+                    console.log(
+                        "Status crop unavailable:",
+                        statusError
+                    );
+                }
+            }
 
 
-                // ==========================
-                // SUCCESS
-                // ==========================
+            // --------------------------------------------------
+            // No active booking:
+            // show the first crop that still has quantity.
+            // --------------------------------------------------
 
-                showMessage(
-                    "✅ Login successful! Redirecting...",
-                    "success"
-                );
+            if (!activeCrop && crops.length > 0) {
 
-
-                loginButton.textContent =
-                    "Login Successful ✓";
-
-
-                // ==========================
-                // DASHBOARD
-                // ==========================
-
-                setTimeout(
-                    function () {
-
-                        window.location.href =
-                            "dashboard.html";
-
-                    },
-                    700
-                );
+                activeCrop =
+                    crops.find(
+                        crop =>
+                            Number(crop.quantity || 0) > 0
+                    ) || null;
+            }
 
 
-            } catch (error) {
+            // --------------------------------------------------
+            // DISPLAY MY CROP
+            // --------------------------------------------------
 
-                console.error(
-                    "Login Error:",
-                    error
-                );
+            if (activeCrop) {
+
+                document.getElementById(
+                    "cropName"
+                ).textContent =
+                    activeCrop.crop_name;
+
+                document.getElementById(
+                    "cropQuantity"
+                ).textContent =
+                    Number(
+                        activeCrop.quantity || 0
+                    ).toFixed(2) +
+                    " " +
+                    (activeCrop.unit || "kg");
+
+                document.getElementById(
+                    "addCropBtn"
+                ).style.display = "none";
+
+            } else {
+
+                document.getElementById(
+                    "cropName"
+                ).textContent =
+                    "No crop added";
+
+                document.getElementById(
+                    "cropQuantity"
+                ).textContent =
+                    "Add your crop to start procurement";
+
+                document.getElementById(
+                    "addCropBtn"
+                ).style.display =
+                    "inline-block";
+            }
+
+        } catch (error) {
+
+            console.log(
+                "Crop error:",
+                error
+            );
+
+            document.getElementById(
+                "cropName"
+            ).textContent =
+                "Error";
+
+            document.getElementById(
+                "cropQuantity"
+            ).textContent =
+                "Unable to load crop";
+
+            document.getElementById(
+                "addCropBtn"
+            ).style.display =
+                "inline-block";
+        }
+
+    }
 
 
-                showMessage(
+    // =====================================
+    // LOAD CENTRES
+    // =====================================
 
-                    "❌ " +
-                    (
-                        error.message ||
-                        "Unable to connect to server."
-                    ),
+    async function loadCentres() {
 
-                    "error"
+        try {
 
-                );
+            const response = await fetch(
+                `${API}/api/centres`
+            );
+
+            const centres = await response.json();
+
+            const container =
+                document.getElementById("centresContainer");
+
+            container.innerHTML = "";
 
 
-                loginButton.disabled =
-                    false;
+            centres.forEach(centre => {
+
+                const div =
+                    document.createElement("div");
+
+                div.className = "centre";
 
 
-                loginButton.textContent =
-                    "Login →";
+                div.innerHTML = `
+
+                    <h3>
+                        ${centre.name}
+                    </h3>
+
+                    <p>
+                        📍 ${centre.location}
+                    </p>
+
+                    <p>
+                        Capacity: ${centre.capacity}
+                    </p>
+
+                    <button
+                        onclick="bookSlot(${centre.id})"
+                    >
+                        Book Slot
+                    </button>
+
+                `;
+
+
+                container.appendChild(div);
+
+            });
+
+        } catch (error) {
+
+            console.log("Centre error:", error);
+
+            document.getElementById("centresContainer").innerHTML =
+                "<p>Unable to load centres.</p>";
+
+        }
+
+    }
+
+
+    // =====================================
+    // LOAD QUEUE
+    // =====================================
+
+    async function loadQueue() {
+
+        try {
+
+            const response = await fetch(
+                `${API}/api/queue/${farmerId}`
+            );
+
+
+            // No active queue
+            if (!response.ok) {
+
+                document.getElementById("queueBox").innerHTML = `
+
+                    <p>
+                        No active queue.
+                    </p>
+
+                `;
+
+                document.getElementById("tokenNumber").textContent =
+                    "--";
+
+                document.getElementById("tokenStatus").textContent =
+                    "No active booking";
+
+                return;
 
             }
 
+
+            // IMPORTANT:
+            // Backend returns ONE OBJECT,
+            // NOT an ARRAY.
+
+            const item = await response.json();
+
+
+            // =================================
+            // TOKEN CARD
+            // =================================
+
+            document.getElementById("tokenNumber").textContent =
+                item.token_number;
+
+            document.getElementById("tokenStatus").textContent =
+                "Waiting";
+
+
+            // =================================
+            // QUEUE DISPLAY
+            // =================================
+
+            document.getElementById("queueBox").innerHTML = `
+
+                <p>
+                    <strong>Your Token</strong>
+                </p>
+
+                <div class="queue-number">
+                    ${item.token_number}
+                </div>
+
+                <p>
+                    <strong>Position:</strong>
+                    ${item.position}
+                </p>
+
+                <p>
+                    <strong>Farmers Ahead:</strong>
+                    ${item.farmers_ahead}
+                </p>
+
+                <p>
+                    <strong>Estimated Wait:</strong>
+                    ${item.estimated_wait} minutes
+                </p>
+
+                <p>
+                    <strong>Centre:</strong>
+                    ${item.centre_name}
+                </p>
+
+                <p>
+                    <strong>Slot:</strong>
+                    ${item.start_time} -
+                    ${item.end_time}
+                </p>
+
+            `;
+
+
+        } catch (error) {
+
+            console.log("Queue error:", error);
+
+            document.getElementById("queueBox").innerHTML = `
+
+                <p>
+                    Unable to load queue.
+                </p>
+
+            `;
+
         }
-    );
-
-
-    // ==========================================
-    // SHOW MESSAGE
-    // ==========================================
-
-    function showMessage(
-        text,
-        type
-    ) {
-
-        message.textContent =
-            text;
-
-        message.className =
-            type;
 
     }
 
 
-    // ==========================================
-    // HIDE MESSAGE
-    // ==========================================
+    // =====================================
+    // LOAD STATUS
+    // =====================================
 
-    function hideMessage() {
+    async function loadStatus() {
 
-        message.textContent = "";
+        try {
 
-        message.className = "";
+            const response = await fetch(
+                `${API}/api/status/${farmerId}`
+            );
+
+
+            if (!response.ok) {
+
+                document.getElementById("procurementStatus").innerHTML =
+                    "No completed procurement found.";
+
+                return;
+
+            }
+
+
+            const data = await response.json();
+
+
+            // TOKEN
+
+            if (data.token_number) {
+
+                document.getElementById("tokenNumber").textContent =
+                    data.token_number;
+
+            }
+
+
+            // PAYMENT
+
+            if (data.total_amount !== null &&
+                data.total_amount !== undefined) {
+
+                document.getElementById("paymentAmount").textContent =
+                    "₹" + data.total_amount;
+
+            }
+
+
+            if (data.payment_status) {
+
+                document.getElementById("paymentStatus").textContent =
+                    data.payment_status;
+
+            }
+
+
+            // PROCUREMENT STATUS
+
+            document.getElementById("procurementStatus").innerHTML = `
+
+                <p>
+                    <strong>Crop:</strong>
+                    ${data.crop_name || "--"}
+                </p>
+
+                <p>
+                    <strong>Quantity:</strong>
+                    ${data.quantity || "--"} kg
+                </p>
+
+                <p>
+                    <strong>Rate:</strong>
+                    ₹${data.rate || "--"} / kg
+                </p>
+
+                <p>
+                    <strong>Total Amount:</strong>
+                    ₹${data.total_amount || "0"}
+                </p>
+
+                <p>
+                    <strong>Procurement:</strong>
+                    ${data.procurement_status || "Pending"}
+                </p>
+
+                <p>
+                    <strong>Payment:</strong>
+                    ${data.payment_status || "Pending"}
+                </p>
+
+            `;
+
+
+        } catch (error) {
+
+            console.log("Status error:", error);
+
+        }
 
     }
 
+
+    // =====================================
+    // BOOK SLOT
+    // =====================================
+
+    function bookSlot(centreId) {
+
+        localStorage.setItem(
+            "selectedCentre",
+            centreId
+        );
+
+        window.location.href =
+            "book-slot.html";
+
+    }
+
+
+    // =====================================
+    // LOGOUT
+    // =====================================
+
+    function logout() {
+
+        localStorage.removeItem("farmer");
+
+        localStorage.removeItem("kisanSetuLoggedIn");
+
+        window.location.href =
+            "login.html";
+
+    }
+
+
+    // Refresh the dashboard whenever the farmer returns
+    // from Book Slot or another page.
+    window.addEventListener("pageshow", function () {
+        loadCrops();
+        loadQueue();
+        loadStatus();
+    });
+
+
+    // =====================================
+    // START
+    // =====================================
+
+    loadCrops();
+
+    loadCentres();
+
+    loadQueue();
+
+    loadStatus();
 
 </script>
-
 
 </body>
 

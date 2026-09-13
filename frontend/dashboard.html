@@ -491,6 +491,26 @@
             }
         }
 
+
+        /* ================================
+           LANGUAGE SELECTOR
+        ================================= */
+        .language-select {
+            background: rgba(255,255,255,.12);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,.25);
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .language-select option {
+            color: #173126;
+            background: #fff;
+        }
+
     </style>
 </head>
 
@@ -506,7 +526,13 @@
         <div class="nav-right">
             <span id="navName">Farmer</span>
 
-            <button class="logout" onclick="logout()">
+            <select id="languageSelect" class="language-select" aria-label="Language">
+                <option value="en">🌐 English</option>
+                <option value="hi">🇮🇳 हिन्दी</option>
+                <option value="gu">🇮🇳 ગુજરાતી</option>
+            </select>
+
+            <button class="logout" onclick="logout()" data-i18n="logout">
                 Logout
             </button>
         </div>
@@ -526,7 +552,7 @@
                 👋
             </h1>
 
-            <p>
+            <p data-i18n="welcomeDesc">
                 Manage your crops, book procurement slots and track your procurement journey.
             </p>
 
@@ -539,7 +565,7 @@
             <!-- CROP -->
             <div class="card">
 
-                <h3>🌾 My Crop</h3>
+                <h3 data-i18n="myCrop">🌾 My Crop</h3>
 
                 <div class="big" id="cropName">
                     Loading...
@@ -555,7 +581,7 @@
                     onclick="openCropModal()"
                     style="display:none;"
                 >
-                    ＋ Add Crop
+                    ＋ <span data-i18n="addCrop">Add Crop</span>
                 </button>
 
             </div>
@@ -564,7 +590,7 @@
             <!-- TOKEN -->
             <div class="card">
 
-                <h3>🎟️ My Token</h3>
+                <h3 data-i18n="myToken">🎟️ My Token</h3>
 
                 <div class="big" id="tokenNumber">
                     --
@@ -580,7 +606,7 @@
             <!-- PAYMENT -->
             <div class="card">
 
-                <h3>💰 Payment</h3>
+                <h3 data-i18n="payment">💰 Payment</h3>
 
                 <div class="big" id="paymentAmount">
                     ₹0
@@ -598,7 +624,7 @@
         <!-- PROCUREMENT CENTRES -->
         <div class="section">
 
-            <h2>
+            <h2 data-i18n="procurementCentres">
                 📍 Procurement Centres
             </h2>
 
@@ -617,7 +643,7 @@
         <!-- QUEUE -->
         <div class="section">
 
-            <h2>
+            <h2 data-i18n="liveQueue">
                 ⏳ Live Queue
             </h2>
 
@@ -636,7 +662,7 @@
         <!-- PROCUREMENT STATUS -->
         <div class="section">
 
-            <h2>
+            <h2 data-i18n="procurementStatusTitle">
                 📦 Procurement Status
             </h2>
 
@@ -658,7 +684,7 @@
         <div class="crop-modal-box">
 
             <div class="crop-modal-header">
-                <h2>🌾 Add Your Crop</h2>
+                <h2 data-i18n="addCropTitle">🌾 Add Your Crop</h2>
                 <button
                     class="crop-close"
                     type="button"
@@ -671,9 +697,9 @@
             <form id="cropForm" onsubmit="saveCrop(event)">
 
                 <div class="crop-form-group">
-                    <label for="cropSelect">Crop Name</label>
+                    <label for="cropSelect" data-i18n="cropNameLabel">Crop Name</label>
                     <select id="cropSelect" required>
-                        <option value="">Select crop</option>
+                        <option value="" data-i18n="selectCrop">Select crop</option>
                         <option value="Wheat">Wheat</option>
                         <option value="Rice">Rice</option>
                         <option value="Soybean">Soybean</option>
@@ -686,28 +712,29 @@
                 </div>
 
                 <div class="crop-form-group" id="otherCropGroup" style="display:none;">
-                    <label for="otherCropName">Other Crop Name</label>
+                    <label for="otherCropName" data-i18n="otherCropName">Other Crop Name</label>
                     <input
                         type="text"
                         id="otherCropName"
                         placeholder="Enter crop name"
+                        data-i18n-placeholder="enterCropName"
                     >
                 </div>
 
                 <div class="crop-form-group">
-                    <label for="cropVariety">Crop Variety</label>
+                    <label for="cropVariety" data-i18n="cropVariety">Crop Variety</label>
                     <select id="cropVariety" required>
-                        <option value="">Select variety</option>
+                        <option value="" data-i18n="selectVariety">Select variety</option>
                     </select>
                 </div>
 
                 <div class="crop-form-group" id="otherVarietyGroup" style="display:none;">
-                    <label for="otherVarietyName">Other Variety</label>
-                    <input type="text" id="otherVarietyName" placeholder="Enter variety">
+                    <label for="otherVarietyName" data-i18n="otherVariety">Other Variety</label>
+                    <input type="text" id="otherVarietyName" placeholder="Enter variety" data-i18n-placeholder="enterVariety">
                 </div>
 
                 <div class="crop-form-group">
-                    <label for="cropInputQuantity">Quantity</label>
+                    <label for="cropInputQuantity" data-i18n="quantity">Quantity</label>
                     <input
                         type="number"
                         id="cropInputQuantity"
@@ -719,11 +746,11 @@
                 </div>
 
                 <div class="crop-form-group">
-                    <label for="cropUnit">Unit</label>
+                    <label for="cropUnit" data-i18n="unit">Unit</label>
                     <select id="cropUnit">
-                        <option value="kg">Kilogram (kg)</option>
-                        <option value="quintal">Quintal</option>
-                        <option value="ton">Ton</option>
+                        <option value="kg" data-i18n="kilogram">Kilogram (kg)</option>
+                        <option value="quintal" data-i18n="quintal">Quintal</option>
+                        <option value="ton" data-i18n="ton">Ton</option>
                     </select>
                 </div>
 
@@ -732,7 +759,7 @@
                     id="cropSaveBtn"
                     type="submit"
                 >
-                    💾 Save Crop
+                    💾 <span data-i18n="saveCrop">Save Crop</span>
                 </button>
 
                 <div
@@ -746,6 +773,127 @@
 
 
 <script>
+
+
+    // =====================================
+    // LANGUAGE SELECTION
+    // =====================================
+
+    const translations = {
+        en: {
+            logout: "Logout",
+            welcomeDesc: "Manage your crops, book procurement slots and track your procurement journey.",
+            myCrop: "🌾 My Crop",
+            myToken: "🎟️ My Token",
+            payment: "💰 Payment",
+            procurementCentres: "📍 Procurement Centres",
+            liveQueue: "⏳ Live Queue",
+            procurementStatusTitle: "📦 Procurement Status",
+            addCropTitle: "🌾 Add Your Crop",
+            cropNameLabel: "Crop Name",
+            selectCrop: "Select crop",
+            otherCropName: "Other Crop Name",
+            enterCropName: "Enter crop name",
+            cropVariety: "Crop Variety",
+            selectVariety: "Select variety",
+            otherVariety: "Other Variety",
+            enterVariety: "Enter variety",
+            quantity: "Quantity",
+            unit: "Unit",
+            kilogram: "Kilogram (kg)",
+            quintal: "Quintal",
+            ton: "Ton",
+            saveCrop: "Save Crop",
+            addCrop: "Add Crop",
+            bookSlot: "Book Slot"
+        },
+        hi: {
+            logout: "लॉग आउट",
+            welcomeDesc: "अपनी फसल प्रबंधित करें, खरीद स्लॉट बुक करें और अपनी खरीद प्रक्रिया को ट्रैक करें।",
+            myCrop: "🌾 मेरी फसल",
+            myToken: "🎟️ मेरा टोकन",
+            payment: "💰 भुगतान",
+            procurementCentres: "📍 खरीद केंद्र",
+            liveQueue: "⏳ लाइव कतार",
+            procurementStatusTitle: "📦 खरीद स्थिति",
+            addCropTitle: "🌾 अपनी फसल जोड़ें",
+            cropNameLabel: "फसल का नाम",
+            selectCrop: "फसल चुनें",
+            otherCropName: "अन्य फसल का नाम",
+            enterCropName: "फसल का नाम दर्ज करें",
+            cropVariety: "फसल की किस्म",
+            selectVariety: "किस्म चुनें",
+            otherVariety: "अन्य किस्म",
+            enterVariety: "किस्म दर्ज करें",
+            quantity: "मात्रा",
+            unit: "इकाई",
+            kilogram: "किलोग्राम (kg)",
+            quintal: "क्विंटल",
+            ton: "टन",
+            saveCrop: "फसल सहेजें",
+            addCrop: "फसल जोड़ें",
+            bookSlot: "स्लॉट बुक करें"
+        },
+        gu: {
+            logout: "લૉગ આઉટ",
+            welcomeDesc: "તમારા પાકનું સંચાલન કરો, ખરીદી સ્લોટ બુક કરો અને તમારી ખરીદી પ્રક્રિયાને ટ્રેક કરો.",
+            myCrop: "🌾 મારો પાક",
+            myToken: "🎟️ મારો ટોકન",
+            payment: "💰 ચુકવણી",
+            procurementCentres: "📍 ખરીદી કેન્દ્રો",
+            liveQueue: "⏳ લાઇવ કતાર",
+            procurementStatusTitle: "📦 ખરીદીની સ્થિતિ",
+            addCropTitle: "🌾 તમારો પાક ઉમેરો",
+            cropNameLabel: "પાકનું નામ",
+            selectCrop: "પાક પસંદ કરો",
+            otherCropName: "અન્ય પાકનું નામ",
+            enterCropName: "પાકનું નામ દાખલ કરો",
+            cropVariety: "પાકની જાત",
+            selectVariety: "જાત પસંદ કરો",
+            otherVariety: "અન્ય જાત",
+            enterVariety: "જાત દાખલ કરો",
+            quantity: "જથ્થો",
+            unit: "એકમ",
+            kilogram: "કિલોગ્રામ (kg)",
+            quintal: "ક્વિન્ટલ",
+            ton: "ટન",
+            saveCrop: "પાક સાચવો",
+            addCrop: "પાક ઉમેરો",
+            bookSlot: "સ્લોટ બુક કરો"
+        }
+    };
+
+    function applyLanguage(lang) {
+        if (!translations[lang]) lang = "en";
+        localStorage.setItem("kisanSetuLanguage", lang);
+
+        document.documentElement.lang = lang === "hi" ? "hi" : (lang === "gu" ? "gu" : "en");
+
+        document.querySelectorAll("[data-i18n]").forEach(el => {
+            const key = el.getAttribute("data-i18n");
+            if (translations[lang][key] !== undefined) {
+                el.textContent = translations[lang][key];
+            }
+        });
+
+        document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+            const key = el.getAttribute("data-i18n-placeholder");
+            if (translations[lang][key] !== undefined) {
+                el.placeholder = translations[lang][key];
+            }
+        });
+
+        // Keep dynamically generated static UI strings translated where possible.
+        window.kisanSetuLanguage = lang;
+    }
+
+    const languageSelect = document.getElementById("languageSelect");
+    const savedLanguage = localStorage.getItem("kisanSetuLanguage") || "en";
+    languageSelect.value = savedLanguage;
+    languageSelect.addEventListener("change", function () {
+        applyLanguage(this.value);
+    });
+    applyLanguage(savedLanguage);
 
     // =====================================
     // API
@@ -1224,7 +1372,7 @@
                     <button
                         onclick="bookSlot(${centre.id})"
                     >
-                        Book Slot
+                        <span data-i18n="bookSlot">Book Slot</span>
                     </button>
 
                 `;
@@ -1233,6 +1381,8 @@
                 container.appendChild(div);
 
             });
+
+            applyLanguage(localStorage.getItem("kisanSetuLanguage") || "en");
 
         } catch (error) {
 
