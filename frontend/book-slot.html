@@ -481,13 +481,11 @@
                         Unit
                     </label>
 
-                    <input
-                        id="unitDisplay"
-                        type="text"
-                        value="--"
-                        readonly
-                        class="readonly-field"
-                    >
+                    <select id="unitDisplay" onchange="changeBookingUnit()" required>
+                        <option value="kg">kg</option>
+                        <option value="quintal">Quintal</option>
+                        <option value="ton">Ton</option>
+                    </select>
 
                 </div>
 
@@ -729,6 +727,118 @@
 
 
     // ==================================================
+    // UNIT CONVERSION
+    // ==================================================
+
+    const UNIT_FACTORS = {
+        kg: 1,
+        quintal: 100,
+        ton: 1000
+    };
+
+    function getUnitFactor(unit) {
+        return UNIT_FACTORS[unit] || 1;
+    }
+
+    function getUnitLabel(unit) {
+        if (unit === "quintal") return "Quintal";
+        if (unit === "ton") return "Ton";
+        return "kg";
+    }
+
+    function getSelectedCrop() {
+        return crops.find(
+            item => Number(item.id) === Number(selectedCropId)
+        );
+    }
+
+    function getCropQuantityKg(crop) {
+        if (!crop) return 0;
+
+        const quantity = Number(crop.quantity || 0);
+        const unit = crop.unit || "kg";
+
+        return quantity * getUnitFactor(unit);
+    }
+
+    function updateAvailableQuantity() {
+        const crop = getSelectedCrop();
+        const quantityInput =
+            document.getElementById("quantityDisplay");
+        const unitSelect =
+            document.getElementById("unitDisplay");
+        const available =
+            document.getElementById("availableQuantity");
+
+        if (!crop) {
+            quantityInput.value = "";
+            quantityInput.removeAttribute("max");
+            available.textContent =
+                "Select a crop to see available quantity.";
+            return;
+        }
+
+        const cropKg = getCropQuantityKg(crop);
+        const selectedUnit = unitSelect.value || crop.unit || "kg";
+        const selectedFactor = getUnitFactor(selectedUnit);
+        const availableInSelectedUnit =
+            cropKg / selectedFactor;
+
+        quantityInput.max =
+            availableInSelectedUnit.toFixed(2);
+
+        available.textContent =
+            `Available: ${availableInSelectedUnit.toFixed(2)} ${getUnitLabel(selectedUnit)} ` +
+            `(${cropKg.toFixed(2)} kg total)`;
+
+        const currentQuantity =
+            Number(quantityInput.value || 0);
+
+        if (
+            currentQuantity > 0 &&
+            currentQuantity > availableInSelectedUnit
+        ) {
+            quantityInput.value =
+                availableInSelectedUnit.toFixed(2);
+        }
+    }
+
+    function changeBookingUnit() {
+        const quantityInput =
+            document.getElementById("quantityDisplay");
+
+        const unitSelect =
+            document.getElementById("unitDisplay");
+
+        const oldUnit =
+            quantityInput.dataset.unit || unitSelect.value || "kg";
+
+        const newUnit =
+            unitSelect.value || "kg";
+
+        const quantity =
+            Number(quantityInput.value || 0);
+
+        if (
+            quantity > 0 &&
+            getUnitFactor(oldUnit) !== getUnitFactor(newUnit)
+        ) {
+            const quantityKg =
+                quantity * getUnitFactor(oldUnit);
+
+            quantityInput.value =
+                (quantityKg / getUnitFactor(newUnit))
+                    .toFixed(2)
+                    .replace(/\.00$/, "");
+        }
+
+        quantityInput.dataset.unit = newUnit;
+        updateAvailableQuantity();
+        updateBookButton();
+    }
+
+
+    // ==================================================
     // SELECT CROP
     // ==================================================
 
@@ -759,9 +869,10 @@
 
         document.getElementById("quantityDisplay").value = "";
         document.getElementById("quantityDisplay").removeAttribute("max");
+        document.getElementById("quantityDisplay").dataset.unit = "";
         document.getElementById("availableQuantity").textContent =
             "Select a crop to see available quantity.";
-        document.getElementById("unitDisplay").value = "--";
+        document.getElementById("unitDisplay").value = "";
 
         if (!selectedCropId) {
             updateBookButton();
@@ -823,21 +934,21 @@
         const quantityInput =
             document.getElementById("quantityDisplay");
 
-        if (Number.isFinite(quantity) && quantity > 0) {
-            quantityInput.value = "";
-            quantityInput.max = quantity;
-            document.getElementById("availableQuantity").textContent =
-                `Available: ${quantity.toFixed(2)} ${unit}`;
-        } else {
-            quantityInput.value = "";
-            document.getElementById("availableQuantity").textContent =
-                "Available quantity not available.";
-        }
+        const unitSelect =
+            document.getElementById("unitDisplay");
 
-        document.getElementById("unitDisplay").value = unit;
+        quantityInput.value = "";
+        quantityInput.dataset.unit = unit;
+
+        // Start with the crop's stored unit.
+        unitSelect.value =
+            UNIT_FACTORS[unit] ? unit : "kg";
+
+        updateAvailableQuantity();
 
         cropInfo.innerHTML =
-            `<strong>${crop.crop_name}</strong> · Available: ${Number.isFinite(quantity) ? quantity.toFixed(2) : "--"} ${unit}`;
+            `<strong>${crop.crop_name}</strong> · Available: ` +
+            `${Number.isFinite(quantity) ? quantity.toFixed(2) : "--"} ${getUnitLabel(unit)}`;
 
         cropInfo.style.display =
             "block";
@@ -1323,12 +1434,30 @@
         }
 
 
+        const displayQuantity =
+            Number(
+                document.getElementById("quantityDisplay").value
+            );
+
+        const bookingUnit =
+            document.getElementById("unitDisplay").value || "kg";
+
+        const bookingQuantityKg =
+            displayQuantity * getUnitFactor(bookingUnit);
+
+        const selectedCrop =
+            getSelectedCrop();
+
+        const availableQuantityKg =
+            getCropQuantityKg(selectedCrop);
+
         if (
             !selectedCropId ||
             !selectedCropVariety ||
             !selectedCentreId ||
             !selectedSlotId ||
-            !Number(document.getElementById("quantityDisplay").value)
+            !Number.isFinite(displayQuantity) ||
+            displayQuantity <= 0
         ) {
 
             showMessage(
@@ -1338,6 +1467,28 @@
 
             return;
 
+        }
+
+        if (
+            !Number.isFinite(bookingQuantityKg) ||
+            bookingQuantityKg <= 0
+        ) {
+            showMessage(
+                "Please enter a valid booking quantity.",
+                "error"
+            );
+            return;
+        }
+
+        if (
+            availableQuantityKg > 0 &&
+            bookingQuantityKg > availableQuantityKg + 0.000001
+        ) {
+            showMessage(
+                `Booking quantity cannot exceed available quantity (${availableQuantityKg.toFixed(2)} kg).`,
+                "error"
+            );
+            return;
         }
 
 
@@ -1395,8 +1546,10 @@
                                 crop_variety:
                                     selectedCropVariety,
 
+                                // Store booking quantity in kg so the
+                                // existing backend/database uses one base unit.
                                 quantity:
-                                    Number(document.getElementById("quantityDisplay").value),
+                                    Number(bookingQuantityKg.toFixed(2)),
 
                                 centre_id:
                                     selectedCentreId,

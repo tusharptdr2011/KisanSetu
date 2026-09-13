@@ -381,6 +381,16 @@
             box-shadow: 0 0 0 3px rgba(33,131,74,.10);
         }
 
+        .form-group small {
+            display: block;
+        }
+
+        @media(max-width: 560px) {
+            #procurementUnit {
+                min-width: 0;
+            }
+        }
+
         .total-box {
             margin-top: 20px;
             padding: 24px;
@@ -1061,31 +1071,50 @@
 
                         <div class="form-group">
 
-                            <label>
-                                Quantity (kg)
+                            <label for="procurementQuantity">
+                                Quantity
                             </label>
 
-                            <input
-                                type="number"
-                                id="procurementQuantity"
-                                min="1"
-                                step="0.01"
-                                oninput="calculateTotal()"
-                            >
+                            <div style="display:grid;grid-template-columns:1fr 150px;gap:10px;">
+
+                                <input
+                                    type="number"
+                                    id="procurementQuantity"
+                                    min="0.01"
+                                    step="0.01"
+                                    placeholder="Enter quantity"
+                                    oninput="calculateTotal()"
+                                >
+
+                                <select
+                                    id="procurementUnit"
+                                    onchange="changeProcurementUnit()"
+                                >
+                                    <option value="kg">Kilogram (kg)</option>
+                                    <option value="quintal">Quintal</option>
+                                    <option value="ton">Ton</option>
+                                </select>
+
+                            </div>
+
+                            <small id="bookedQuantityHint"
+                                style="margin-top:7px;color:#6a7a71;font-size:12px;">
+                                Booked quantity: --
+                            </small>
 
                         </div>
 
 
                         <div class="form-group">
 
-                            <label>
+                            <label id="procurementRateLabel" for="procurementRate">
                                 Rate (₹ per kg)
                             </label>
 
                             <input
                                 type="number"
                                 id="procurementRate"
-                                min="1"
+                                min="0.01"
                                 step="0.01"
                                 placeholder="Enter rate"
                                 oninput="calculateTotal()"
@@ -1334,6 +1363,19 @@
 
 
     // =====================================
+    // PROCUREMENT UNIT DEFAULT
+    // =====================================
+
+    document.getElementById("procurementUnit")
+        .value = "kg";
+
+    document.getElementById("procurementQuantity")
+        .dataset.unit = "kg";
+
+    updateRateLabel();
+
+
+    // =====================================
     // LOAD QUEUE
     // =====================================
 
@@ -1448,7 +1490,7 @@
                     </td>
 
                     <td>
-                        ${farmer.crop_quantity || "--"} kg
+                        ${farmer.booking_quantity ?? farmer.crop_quantity ?? "--"} ${farmer.booking_unit || farmer.unit || "kg"}
                     </td>
 
                     <td>
@@ -1536,7 +1578,8 @@
 
         document.getElementById("currentQuantity")
             .textContent =
-            (farmer.crop_quantity || "--") + " kg";
+            (farmer.booking_quantity ?? farmer.crop_quantity ?? "--") + " " +
+            (farmer.booking_unit || farmer.unit || "kg");
 
 
         document.getElementById("currentMobile")
@@ -1570,18 +1613,35 @@
             farmer.crop_name || "";
 
 
-        // Fill quantity
+        // Fill booked quantity in the base unit (kg).
+        // The staff member can switch the display to kg, quintal or ton.
+        document.getElementById("procurementUnit").value = "kg";
+
+        const bookedQuantity =
+            Number(
+                farmer.booking_quantity ??
+                farmer.crop_quantity ??
+                0
+            );
 
         document.getElementById("procurementQuantity")
             .value =
-            farmer.crop_quantity || "";
+            bookedQuantity > 0 ? bookedQuantity : "";
 
+        document.getElementById("procurementQuantity")
+            .dataset.unit = "kg";
+
+        document.getElementById("bookedQuantityHint")
+            .textContent =
+            "Booked quantity: " +
+            formatNumber(bookedQuantity) +
+            " kg";
+
+        updateRateLabel();
 
         // Clear rate
-
         document.getElementById("procurementRate")
             .value = "";
-
 
         document.getElementById("totalAmount")
             .textContent = "₹0.00";
@@ -1608,10 +1668,97 @@
 
 
     // =====================================
-    // CALCULATE TOTAL
+    // UNIT + TOTAL CALCULATION
     // =====================================
 
+    const UNIT_FACTORS = {
+        kg: 1,
+        quintal: 100,
+        ton: 1000
+    };
+
+    function getUnitFactor() {
+        const unit =
+            document.getElementById("procurementUnit").value;
+
+        return UNIT_FACTORS[unit] || 1;
+    }
+
+    function getUnitLabel() {
+        const unit =
+            document.getElementById("procurementUnit").value;
+
+        if (unit === "quintal") return "Quintal";
+        if (unit === "ton") return "Ton";
+
+        return "kg";
+    }
+
+    function formatNumber(value) {
+        return Number(value || 0).toLocaleString("en-IN", {
+            maximumFractionDigits: 2
+        });
+    }
+
+    function updateRateLabel() {
+        document.getElementById("procurementRateLabel")
+            .textContent =
+            "Rate (₹ per " + getUnitLabel() + ")";
+    }
+
+    function changeProcurementUnit() {
+        const quantityInput =
+            document.getElementById("procurementQuantity");
+
+        const rateInput =
+            document.getElementById("procurementRate");
+
+        const oldUnit =
+            quantityInput.dataset.unit || "kg";
+
+        const newUnit =
+            document.getElementById("procurementUnit").value;
+
+        const oldFactor =
+            UNIT_FACTORS[oldUnit] || 1;
+
+        const newFactor =
+            UNIT_FACTORS[newUnit] || 1;
+
+        // Keep the same physical quantity when changing units.
+        const quantity =
+            Number(quantityInput.value);
+
+        if (quantity > 0) {
+            const quantityKg = quantity * oldFactor;
+            quantityInput.value =
+                (quantityKg / newFactor)
+                    .toFixed(2)
+                    .replace(/\.00$/, "");
+        }
+
+        // Keep the same total value per physical quantity
+        // when changing the rate unit.
+        const rate =
+            Number(rateInput.value);
+
+        if (rate > 0) {
+            const ratePerKg = rate / oldFactor;
+            rateInput.value =
+                (ratePerKg * newFactor)
+                    .toFixed(2)
+                    .replace(/\.00$/, "");
+        }
+
+        quantityInput.dataset.unit = newUnit;
+
+        updateRateLabel();
+        calculateTotal();
+    }
+
     function calculateTotal() {
+
+        updateRateLabel();
 
         const quantity =
             Number(
@@ -1620,7 +1767,6 @@
                 ).value
             );
 
-
         const rate =
             Number(
                 document.getElementById(
@@ -1628,16 +1774,55 @@
                 ).value
             );
 
+        const factor = getUnitFactor();
 
+        const bookedKg =
+            Number(
+                selectedFarmer?.booking_quantity ??
+                selectedFarmer?.crop_quantity ??
+                0
+            );
+
+        const quantityKg =
+            quantity * factor;
+
+        const quantityField =
+            document.getElementById("procurementQuantity");
+
+        // Store the currently displayed unit so unit changes
+        // can convert the value correctly.
+        quantityField.dataset.unit =
+            document.getElementById("procurementUnit").value;
+
+        // Total is calculated using the values currently displayed
+        // to the staff member. Example: 5 quintal × ₹7,300/quintal.
         const total =
             quantity * rate;
-
 
         document.getElementById("totalAmount")
             .textContent =
             "₹" +
             (total || 0).toFixed(2);
 
+        // Client-side validation using kg as the common base unit.
+        const message =
+            document.getElementById("procurementMessage");
+
+        if (quantity > 0 && bookedKg > 0 && quantityKg > bookedKg) {
+            message.style.display = "block";
+            message.className = "message error-message";
+            message.textContent =
+                "❌ Procurement quantity cannot exceed booked quantity (" +
+                formatNumber(bookedKg) +
+                " kg).";
+        } else if (
+            message.textContent.includes(
+                "Procurement quantity cannot exceed"
+            )
+        ) {
+            message.style.display = "none";
+            message.textContent = "";
+        }
     }
 
 
@@ -1658,23 +1843,38 @@
         }
 
 
-        const quantity =
+        const displayQuantity =
             Number(
                 document.getElementById(
                     "procurementQuantity"
                 ).value
             );
 
-
-        const rate =
+        const displayRate =
             Number(
                 document.getElementById(
                     "procurementRate"
                 ).value
             );
 
+        const unit =
+            document.getElementById(
+                "procurementUnit"
+            ).value;
 
-        if (!quantity || quantity <= 0) {
+        const factor =
+            UNIT_FACTORS[unit] || 1;
+
+        // Backend stores procurement quantity and rate in kg.
+        // Convert the staff-selected unit before sending.
+        const quantityKg =
+            displayQuantity * factor;
+
+        const ratePerKg =
+            displayRate / factor;
+
+
+        if (!displayQuantity || displayQuantity <= 0) {
 
             alert(
                 "Please enter a valid quantity."
@@ -1685,7 +1885,7 @@
         }
 
 
-        if (!rate || rate <= 0) {
+        if (!displayRate || displayRate <= 0) {
 
             alert(
                 "Please enter the procurement rate."
@@ -1693,6 +1893,25 @@
 
             return;
 
+        }
+
+        const bookedQuantityKg =
+            Number(
+                selectedFarmer.booking_quantity ??
+                selectedFarmer.crop_quantity ??
+                0
+            );
+
+        if (
+            bookedQuantityKg > 0 &&
+            quantityKg > bookedQuantityKg + 0.000001
+        ) {
+            alert(
+                "Procurement quantity cannot exceed booked quantity (" +
+                formatNumber(bookedQuantityKg) +
+                " kg)."
+            );
+            return;
         }
 
 
@@ -1708,7 +1927,7 @@
 
 
         const total =
-            quantity * rate;
+            displayQuantity * displayRate;
 
 
         const message =
@@ -1750,10 +1969,10 @@
                             selectedFarmer.crop_id,
 
                         quantity:
-                            quantity,
+                            Number(quantityKg.toFixed(2)),
 
                         rate:
-                            rate
+                            Number(ratePerKg.toFixed(4))
 
                     })
                 }

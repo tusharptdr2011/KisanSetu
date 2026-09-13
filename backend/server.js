@@ -266,22 +266,51 @@ app.get("/api/slots", (req, res) => {
             c.name AS centre_name,
             c.location,
             s.slot_date,
-            s.start_time,
-            s.end_time,
+
+            TIME_FORMAT(
+                ADDTIME(
+                    '09:00:00',
+                    SEC_TO_TIME(
+                        (ROW_NUMBER() OVER (
+                            PARTITION BY s.centre_id, s.slot_date
+                            ORDER BY s.id
+                        ) - 1) * 3600
+                    )
+                ),
+                '%H:%i:%s'
+            ) AS start_time,
+
+            TIME_FORMAT(
+                ADDTIME(
+                    '09:00:00',
+                    SEC_TO_TIME(
+                        ROW_NUMBER() OVER (
+                            PARTITION BY s.centre_id, s.slot_date
+                            ORDER BY s.id
+                        ) * 3600
+                    )
+                ),
+                '%H:%i:%s'
+            ) AS end_time,
+
             s.capacity,
             s.booked_count
+
         FROM slots s
         JOIN centres c
             ON s.centre_id = c.id
+
         ORDER BY
             s.slot_date ASC,
-            s.start_time ASC
+            s.centre_id ASC,
+            s.id ASC
     `;
 
     db.query(sql, (err, results) => {
         if (err) {
+            console.log("❌ Error fetching slots:", err.message);
             return res.status(500).json({
-                message: "Failed to load slots",
+                message: "Failed to fetch slots",
                 error: err.message
             });
         }

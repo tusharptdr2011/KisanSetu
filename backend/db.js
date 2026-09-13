@@ -1,14 +1,18 @@
 const mysql = require("mysql2");
 
-const db = mysql.createConnection({
+const db = mysql.createPool({
     host: process.env.MYSQLHOST,
     port: Number(process.env.MYSQLPORT || 3306),
     user: process.env.MYSQLUSER,
     password: process.env.MYSQLPASSWORD,
-    database: process.env.MYSQLDATABASE
+    database: process.env.MYSQLDATABASE,
+
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
-db.connect((err) => {
+db.getConnection((err, connection) => {
     if (err) {
         console.log("❌ MySQL connection failed!");
         console.log(err.message);
@@ -16,6 +20,7 @@ db.connect((err) => {
     }
 
     console.log("MySQL Connected Successfully ✅");
+    connection.release();
 });
 
 module.exports = db;

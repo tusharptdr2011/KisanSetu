@@ -993,87 +993,199 @@
 
             const crops = await response.json();
 
-            // Check the farmer's latest booking.
-            // If a booking is still active/waiting, show the crop
-            // selected for that booking.
-            // Once procurement is completed, show the next crop
-            // that still has quantity available.
+            // --------------------------------------------------
+            // IMPORTANT:
+            // If the farmer has an active booking, My Crop must
+            // show the crop belonging to that booking.
+            // Do NOT simply use crops[0].
+            // --------------------------------------------------
+
             let activeCrop = null;
 
             try {
-                const statusResponse = await fetch(
-                    `${API}/api/status/${farmerId}`
+
+                const queueResponse = await fetch(
+                    `${API}/api/queue/${farmerId}`
                 );
 
-                if (statusResponse.ok) {
-                    const status = await statusResponse.json();
+                if (queueResponse.ok) {
 
-                    const bookingIsActive =
-                        status.booking_status &&
-                        status.booking_status !== "completed";
+                    const queueData =
+                        await queueResponse.json();
 
-                    if (bookingIsActive && status.crop_id) {
-                        activeCrop = crops.find(
-                            crop => Number(crop.id) === Number(status.crop_id)
-                        ) || {
-                            crop_name: status.crop_name,
-                            quantity: status.remaining_quantity ?? 0,
-                            unit: status.unit || "kg"
-                        };
+                    // Backend may return one object or an array.
+                    const queueItem =
+                        Array.isArray(queueData)
+                            ? queueData[0]
+                            : queueData;
+
+                    if (
+                        queueItem &&
+                        queueItem.crop_id
+                    ) {
+
+                        activeCrop =
+                            crops.find(
+                                crop =>
+                                    Number(crop.id) ===
+                                    Number(queueItem.crop_id)
+                            ) || {
+                                id: queueItem.crop_id,
+                                crop_name:
+                                    queueItem.crop_name ||
+                                    "Selected Crop",
+                                quantity:
+                                    queueItem.booking_quantity ??
+                                    queueItem.crop_quantity ??
+                                    0,
+                                unit:
+                                    queueItem.unit ||
+                                    "kg"
+                            };
                     }
                 }
-            } catch (statusError) {
-                console.log("Booking status unavailable:", statusError);
+
+            } catch (queueError) {
+
+                console.log(
+                    "Active booking unavailable:",
+                    queueError
+                );
             }
 
-            // No active booking? Show the first crop that still has
-            // quantity available. Crops with 0 quantity are normally
-            // filtered by the backend already.
+
+            // --------------------------------------------------
+            // If no active queue exists, check latest status.
+            // This is useful immediately after a booking if the
+            // queue endpoint is temporarily unavailable.
+            // --------------------------------------------------
+
             if (!activeCrop) {
-                activeCrop = crops.find(
-                    crop => Number(crop.quantity) > 0
-                ) || null;
+
+                try {
+
+                    const statusResponse =
+                        await fetch(
+                            `${API}/api/status/${farmerId}`
+                        );
+
+                    if (statusResponse.ok) {
+
+                        const status =
+                            await statusResponse.json();
+
+                        // Only use status crop when there is an
+                        // actual current booking/procurement record.
+                        if (
+                            status &&
+                            status.crop_id &&
+                            status.crop_name
+                        ) {
+
+                            const statusCrop =
+                                crops.find(
+                                    crop =>
+                                        Number(crop.id) ===
+                                        Number(status.crop_id)
+                                );
+
+                            if (statusCrop) {
+                                activeCrop = statusCrop;
+                            }
+                        }
+                    }
+
+                } catch (statusError) {
+
+                    console.log(
+                        "Status crop unavailable:",
+                        statusError
+                    );
+                }
             }
+
+
+            // --------------------------------------------------
+            // No active booking:
+            // show the first crop that still has quantity.
+            // --------------------------------------------------
+
+            if (!activeCrop && crops.length > 0) {
+
+                activeCrop =
+                    crops.find(
+                        crop =>
+                            Number(crop.quantity || 0) > 0
+                    ) || null;
+            }
+
+
+            // --------------------------------------------------
+            // DISPLAY MY CROP
+            // --------------------------------------------------
 
             if (activeCrop) {
 
-                document.getElementById("cropName").textContent =
+                document.getElementById(
+                    "cropName"
+                ).textContent =
                     activeCrop.crop_name;
 
-                document.getElementById("cropQuantity").textContent =
-                    Number(activeCrop.quantity).toFixed(2) + " " +
+                document.getElementById(
+                    "cropQuantity"
+                ).textContent =
+                    Number(
+                        activeCrop.quantity || 0
+                    ).toFixed(2) +
+                    " " +
                     (activeCrop.unit || "kg");
 
-                document.getElementById("addCropBtn").style.display =
-                    "none";
+                document.getElementById(
+                    "addCropBtn"
+                ).style.display = "none";
 
             } else {
 
-                document.getElementById("cropName").textContent =
+                document.getElementById(
+                    "cropName"
+                ).textContent =
                     "No crop added";
 
-                document.getElementById("cropQuantity").textContent =
+                document.getElementById(
+                    "cropQuantity"
+                ).textContent =
                     "Add your crop to start procurement";
 
-                document.getElementById("addCropBtn").style.display =
+                document.getElementById(
+                    "addCropBtn"
+                ).style.display =
                     "inline-block";
             }
 
         } catch (error) {
 
-            console.log("Crop error:", error);
+            console.log(
+                "Crop error:",
+                error
+            );
 
-            document.getElementById("cropName").textContent =
+            document.getElementById(
+                "cropName"
+            ).textContent =
                 "Error";
 
-            document.getElementById("cropQuantity").textContent =
+            document.getElementById(
+                "cropQuantity"
+            ).textContent =
                 "Unable to load crop";
 
-            document.getElementById("addCropBtn").style.display =
+            document.getElementById(
+                "addCropBtn"
+            ).style.display =
                 "inline-block";
         }
-    }
 
+    }
 
 
     // =====================================
@@ -1388,6 +1500,15 @@
             "login.html";
 
     }
+
+
+    // Refresh the dashboard whenever the farmer returns
+    // from Book Slot or another page.
+    window.addEventListener("pageshow", function () {
+        loadCrops();
+        loadQueue();
+        loadStatus();
+    });
 
 
     // =====================================
