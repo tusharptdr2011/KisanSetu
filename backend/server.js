@@ -230,19 +230,73 @@ app.get("/api/crops/:farmer_id", (req, res) => {
    GET CENTRES
 ===================================================== */
 
-app.get("/api/centres", (req, res) => {
+/* =====================================================
+   GET MANDIS
+===================================================== */
+
+app.get("/api/mandis", (req, res) => {
     const sql = `
         SELECT
             id,
             name,
-            location,
-            capacity,
-            created_at
-        FROM centres
-        ORDER BY id ASC
+            city,
+            state
+        FROM mandis
+        ORDER BY state ASC, city ASC, name ASC
     `;
 
     db.query(sql, (err, results) => {
+        if (err) {
+            return res.status(500).json({
+                message: "Failed to load mandis",
+                error: err.message
+            });
+        }
+
+        res.json(results);
+    });
+});
+
+
+/* =====================================================
+   GET PROCUREMENT CENTRES
+   Optional: ?mandi_id=1
+===================================================== */
+
+app.get("/api/centres", (req, res) => {
+
+    const { mandi_id } = req.query;
+
+    let sql = `
+        SELECT
+            c.id,
+            c.name,
+            c.location,
+            c.capacity,
+            c.mandi_id,
+            m.name AS mandi_name,
+            m.city,
+            m.state
+        FROM centres c
+        LEFT JOIN mandis m
+            ON c.mandi_id = m.id
+    `;
+
+    const params = [];
+
+    if (mandi_id) {
+        sql += ` WHERE c.mandi_id = ? `;
+        params.push(mandi_id);
+    }
+
+    sql += `
+        ORDER BY
+            m.state ASC,
+            m.city ASC,
+            c.name ASC
+    `;
+
+    db.query(sql, params, (err, results) => {
         if (err) {
             return res.status(500).json({
                 message: "Failed to load centres",
@@ -253,7 +307,6 @@ app.get("/api/centres", (req, res) => {
         res.json(results);
     });
 });
-
 /* =====================================================
    GET SLOTS
 ===================================================== */
