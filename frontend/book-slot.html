@@ -457,16 +457,21 @@
                 <div class="crop-field">
 
                     <label for="quantityDisplay">
-                        Quantity
+                        Booking Quantity
                     </label>
 
                     <input
                         id="quantityDisplay"
-                        type="text"
-                        value="--"
-                        readonly
-                        class="readonly-field"
+                        type="number"
+                        value=""
+                        min="0.01"
+                        step="0.01"
+                        placeholder="Enter quantity"
                     >
+
+                    <small id="availableQuantity" class="field-hint">
+                        Select a crop to see available quantity.
+                    </small>
 
                 </div>
 
@@ -753,7 +758,10 @@
         cropInfo.style.display =
             "none";
 
-        document.getElementById("quantityDisplay").value = "--";
+        document.getElementById("quantityDisplay").value = "";
+        document.getElementById("quantityDisplay").removeAttribute("max");
+        document.getElementById("availableQuantity").textContent =
+            "Select a crop to see available quantity.";
         document.getElementById("unitDisplay").value = "--";
 
         if (!selectedCropId) {
@@ -813,13 +821,24 @@
         const quantity = Number(crop.quantity);
         const unit = crop.unit || "kg";
 
-        document.getElementById("quantityDisplay").value =
-            Number.isFinite(quantity) ? quantity.toFixed(2) : "--";
+        const quantityInput =
+            document.getElementById("quantityDisplay");
+
+        if (Number.isFinite(quantity) && quantity > 0) {
+            quantityInput.value = "";
+            quantityInput.max = quantity;
+            document.getElementById("availableQuantity").textContent =
+                `Available: ${quantity.toFixed(2)} ${unit}`;
+        } else {
+            quantityInput.value = "";
+            document.getElementById("availableQuantity").textContent =
+                "Available quantity not available.";
+        }
 
         document.getElementById("unitDisplay").value = unit;
 
         cropInfo.innerHTML =
-            `<strong>${crop.crop_name}</strong> · ${Number.isFinite(quantity) ? quantity.toFixed(2) : "--"} ${unit}`;
+            `<strong>${crop.crop_name}</strong> · Available: ${Number.isFinite(quantity) ? quantity.toFixed(2) : "--"} ${unit}`;
 
         cropInfo.style.display =
             "block";
@@ -1309,7 +1328,8 @@
             !selectedCropId ||
             !selectedCropVariety ||
             !selectedCentreId ||
-            !selectedSlotId
+            !selectedSlotId ||
+            !Number(document.getElementById("quantityDisplay").value)
         ) {
 
             showMessage(
@@ -1375,6 +1395,9 @@
 
                                 crop_variety:
                                     selectedCropVariety,
+
+                                quantity:
+                                    Number(document.getElementById("quantityDisplay").value),
 
                                 centre_id:
                                     selectedCentreId,
